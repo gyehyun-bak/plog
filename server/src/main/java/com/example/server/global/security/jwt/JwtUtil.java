@@ -26,11 +26,11 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String createAccessToken(long userId) {
+    public String createAccessToken(int userId) {
         return createToken(String.valueOf(userId), ACCESS_TOKEN_MAX_AGE);
     }
 
-    public String createRefreshToken(long userId) {
+    public String createRefreshToken(int userId) {
         return createToken(String.valueOf(userId), REFRESH_TOKEN_MAX_AGE);
     }
 
