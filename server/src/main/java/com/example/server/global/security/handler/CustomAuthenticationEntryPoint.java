@@ -1,0 +1,38 @@
+package com.example.server.global.security.handler;
+
+import com.example.server.global.error.ErrorCode;
+import com.example.server.global.error.ErrorResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+
+import java.io.IOException;
+
+@RequiredArgsConstructor
+public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
+    private final ObjectMapper objectMapper;
+
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+        ErrorResponse errorResponse;
+
+        String token = request.getHeader("Authorization"); // Bearer 토큰 여부 확인
+        if (token == null || token.isEmpty()) {
+            // 인증 자체 없음
+            errorResponse = ErrorResponse.of(ErrorCode.AUTHENTICATION_REQUIRED, request.getRequestURI());
+        } else {
+            // 인증 시도는 있었으나 실패
+            errorResponse = ErrorResponse.of(ErrorCode.JWT_AUTHENTICATION_FAIL, request.getRequestURI());
+        }
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        objectMapper.writeValue(response.getWriter(), errorResponse);
+    }
+}
