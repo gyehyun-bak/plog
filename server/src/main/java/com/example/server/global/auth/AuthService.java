@@ -4,6 +4,7 @@ import com.example.server.domain.user.domain.User;
 import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.global.auth.dto.LoginRequest;
 import com.example.server.global.auth.dto.LoginResponse;
+import com.example.server.global.auth.exception.OAuth2ProviderNotSupportedException;
 import com.example.server.global.auth.exception.UsernameTakenException;
 import com.example.server.global.auth.oauth2.OAuth2ServiceManager;
 import com.example.server.global.security.jwt.JwtUtil;
@@ -21,10 +22,13 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     public LoginResponse login(LoginRequest request, HttpServletResponse response) {
-        String oauthId = oAuth2ServiceManager.getOAuthId(request.getProvider(), request.getCode());
+        String oAuthId = oAuth2ServiceManager.getOAuthId(request.getProvider(), request.getCode());
+        if (oAuthId == null) {
+            throw new OAuth2ProviderNotSupportedException();
+        }
 
-        User user = userRepository.findByOauthProviderAndOauthId(request.getProvider(), oauthId)
-                .orElse(createNewUser(request.getUsername(), request.getProvider(), oauthId));
+        User user = userRepository.findByOauthProviderAndOauthId(request.getProvider(), oAuthId)
+                .orElse(createNewUser(request.getUsername(), request.getProvider(), oAuthId));
 
         String accessToken = jwtUtil.createAccessToken(user.getId());
         String refreshToken = jwtUtil.createRefreshToken(user.getId());
@@ -37,12 +41,12 @@ public class AuthService {
 
     }
 
-    private User createNewUser(String username, String oauthProvider, String oauthId) {
+    private User createNewUser(String username, String oAuthProvider, String oAuthId) {
         if (userRepository.existsByUsername(username)) {
             throw new UsernameTakenException();
         }
 
-        User user = User.create(username, oauthProvider, oauthId);
+        User user = User.create(username, oAuthProvider, oAuthId);
         userRepository.save(user);
 
         return user;
