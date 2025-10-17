@@ -10,5 +10,12 @@ import java.util.List;
 public class OAuth2ServiceManager {
     private final List<OAuth2Service> services;
 
-
+    public String getOAuthId(String provider, String code) {
+        for (OAuth2Service service : services) {
+            if (service.supports(provider)) {
+                return service.getOAuthId(code);
+            }
+        }
+        return null;
+    }
 }
