@@ -38,7 +38,7 @@ public class AuthService {
     }
 
     public void logout(HttpServletResponse response) {
-
+        deleteRefreshTokenFromCookie(response);
     }
 
     private User createNewUser(String username, String oAuthProvider, String oAuthId) {
