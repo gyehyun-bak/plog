@@ -10,4 +10,8 @@ public class AuthService {
     public LoginResponse login(LoginRequest request, HttpServletResponse response) {
         return null;
     }
+
+    public void logout(HttpServletResponse response) {
+
+    }
 }
