@@ -22,4 +22,10 @@ public class AuthController {
     ) {
         return ResponseEntity.ok(authService.login(request, response));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        authService.logout(response);
+        return ResponseEntity.ok().build();
+    }
 }
