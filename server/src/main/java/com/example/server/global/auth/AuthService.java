@@ -4,6 +4,7 @@ import com.example.server.domain.user.domain.User;
 import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.global.auth.dto.LoginRequest;
 import com.example.server.global.auth.dto.LoginResponse;
+import com.example.server.global.auth.dto.ProviderResponse;
 import com.example.server.global.auth.exception.OAuth2ProviderNotSupportedException;
 import com.example.server.global.auth.exception.UsernameTakenException;
 import com.example.server.global.auth.oauth2.OAuth2ServiceManager;
@@ -13,6 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -20,6 +23,10 @@ public class AuthService {
     private final OAuth2ServiceManager oAuth2ServiceManager;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+
+    public List<ProviderResponse> getProviders() {
+        return oAuth2ServiceManager.getProviders();
+    }
 
     public LoginResponse login(LoginRequest request, HttpServletResponse response) {
         String oAuthId = oAuth2ServiceManager.getOAuthId(request.getProvider(), request.getCode());

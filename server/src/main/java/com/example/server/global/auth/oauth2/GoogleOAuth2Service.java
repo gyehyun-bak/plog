@@ -1,5 +1,6 @@
 package com.example.server.global.auth.oauth2;
 
+import com.example.server.global.auth.dto.ProviderResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,8 @@ import java.util.Collections;
 
 @Service
 public class GoogleOAuth2Service implements OAuth2Service {
+
+    private static final String PROVIDER_NAME = "GOOGLE";
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -25,9 +28,22 @@ public class GoogleOAuth2Service implements OAuth2Service {
     @Value("${oauth.google.redirect-uri}")
     private String redirectUri;
 
+
+    @Override
+    public ProviderResponse getProvider() {
+        return new ProviderResponse(PROVIDER_NAME, getAuthorizationUrl());
+    }
+
+    private String getAuthorizationUrl() {
+        return authUri + "?client_id=" + clientId
+                + "&redirect_uri=" + redirectUri
+                + "&response_type=code"
+                + "&scope=email%20profile";
+    }
+
     @Override
     public boolean supports(String provider) {
-        return provider.equals("GOOGLE");
+        return provider.equals(PROVIDER_NAME);
     }
 
     @Override
