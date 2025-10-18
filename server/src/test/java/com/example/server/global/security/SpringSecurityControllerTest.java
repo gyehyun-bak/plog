@@ -1,15 +1,11 @@
 package com.example.server.global.security;
 
-import com.example.server.domain.user.service.UserService;
-import com.example.server.domain.user.service.UserServiceTestImpl;
-import com.example.server.global.security.jwt.JwtAuthenticationProvider;
 import com.example.server.global.security.jwt.JwtUtil;
-import com.example.server.global.security.userdetails.CustomUserDetailsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -17,14 +13,8 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WebMvcTest(controllers = {SpringSecurityController.class})
-@Import({
-        SecurityConfig.class,
-        JwtUtil.class,
-        JwtAuthenticationProvider.class,
-        CustomUserDetailsService.class,
-        UserServiceTestImpl.class
-        })
+@SpringBootTest
+@AutoConfigureMockMvc
 class SpringSecurityControllerTest {
 
     @Autowired
