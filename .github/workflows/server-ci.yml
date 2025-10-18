@@ -51,7 +51,7 @@ jobs:
                       hibernate:
                         ddl-auto: create
                   jwt:
-                    secret-key: this-is-test-secret-key-for-ci
+                    secret-key: 8e550eaeb895c90028a0c3ae72a72d525c6cf84efb29fc051cf9b039998154a0
                   oauth:
                     google:
                       client-id: test-id
