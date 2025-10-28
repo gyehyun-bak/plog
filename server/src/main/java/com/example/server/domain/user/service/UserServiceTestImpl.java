@@ -7,9 +7,6 @@ import org.springframework.stereotype.Service;
 public class UserServiceTestImpl implements UserService {
     @Override
     public User getById(Integer userId) {
-        User user = new User();
-        user.setId(userId);
-        user.setUsername("testUser");
-        return user;
+        return User.create("test", "test@email.com", "TEST", "test-id");
     }
 }
