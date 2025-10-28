@@ -38,7 +38,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeUsername(String username) {
+    public void changeUsername(Integer userId, String username) {
+        validateUsername(username);
 
+        User user = userRepository.findById(userId).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+        user.changeUsername(username);
     }
 }

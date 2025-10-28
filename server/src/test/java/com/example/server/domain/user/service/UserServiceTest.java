@@ -87,4 +87,21 @@ class UserServiceTest {
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.INVALID_USERNAME);
     }
+
+    @Test
+    @DisplayName("올바른 username 으로 바꿀 수 있다")
+    void canChangeToValidUsername() {
+        // given
+        String username = "test";
+        User user = User.create(username, "test@email.com", "TEST", "test-id");
+        userRepository.save(user);
+
+        String newUsername = "new";
+
+        // when
+        userService.changeUsername(user.getId(), newUsername);
+
+        // then
+        assertThat(user.getUsername()).isEqualTo(newUsername);
+    }
 }
