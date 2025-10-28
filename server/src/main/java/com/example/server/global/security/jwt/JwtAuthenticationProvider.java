@@ -1,7 +1,7 @@
 package com.example.server.global.security.jwt;
 
+import com.example.server.global.error.BaseException;
 import com.example.server.global.error.ErrorCode;
-import com.example.server.global.security.exception.JwtAuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -32,7 +32,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
                     token,
                     userDetails.getAuthorities());
         } catch (Exception e) { // JwtException을 AuthenticationException 으로 변환
-            throw new JwtAuthenticationException(ErrorCode.JWT_AUTHENTICATION_FAIL);
+            throw new BaseException(ErrorCode.JWT_AUTHENTICATION_FAIL);
         }
     }
 

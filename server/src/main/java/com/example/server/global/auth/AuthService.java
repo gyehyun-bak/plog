@@ -53,7 +53,7 @@ public class AuthService {
             throw new UsernameTakenException();
         }
 
-        User user = User.create(username, oAuthProvider, oAuthId);
+        User user = User.create(username, "", oAuthProvider, oAuthId);
         userRepository.save(user);
 
         return user;

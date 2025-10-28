@@ -6,8 +6,7 @@ import lombok.*;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 public class User extends BaseEntity {
@@ -17,14 +16,21 @@ public class User extends BaseEntity {
     private Integer id;
     @Column(nullable = false, unique = true)
     private String username;
+    @Column(nullable = false)
+    private String email;
     private String oauthProvider;
     private String oauthId;
 
-    public static User create(String username, String oauthProvider, String oauthId) {
+    public static User create(String username, String email, String oauthProvider, String oauthId) {
         return User.builder()
                 .username(username)
+                .email(email)
                 .oauthProvider(oauthProvider)
                 .oauthId(oauthId)
                 .build();
+    }
+
+    public void changeUsername(String username) {
+        this.username = username;
     }
 }

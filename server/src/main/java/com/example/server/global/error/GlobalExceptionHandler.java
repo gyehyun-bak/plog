@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleBaseException(BaseException e, HttpServletRequest request) {
-        log.info("BaseException 발생: 요청 [{}], 코드 [{}], 메시지 [{}]",
+        log.debug("BaseException 발생: 요청 [{}], 코드 [{}], 메시지 [{}]",
                 request.getRequestURI(), e.getErrorCode(), e.getMessage());
         return ErrorResponse.toResponseEntity(e.getErrorCode(), request.getRequestURI());
     }
@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException e,
             HttpServletRequest request) {
 
-        log.info("HttpMessageNotReadableException 발생: 요청 [{}], 메시지 [{}]",
+        log.debug("HttpMessageNotReadableException 발생: 요청 [{}], 메시지 [{}]",
                 request.getRequestURI(), e.getMessage());
 
         return ErrorResponse.toResponseEntity(ErrorCode.BAD_REQUEST, request.getRequestURI());
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .collect(Collectors.joining(", "));
 
-        log.info("ValidationException 발생: 요청 [{}], 메시지 [{}]",
+        log.debug("ValidationException 발생: 요청 [{}], 메시지 [{}]",
                 request.getRequestURI(), validationErrors);
 
         return ErrorResponse.toResponseEntity(ErrorCode.BAD_REQUEST, request.getRequestURI(), validationErrors);
@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
                 e.getRequiredType() != null ? e.getRequiredType().getSimpleName() : "unknown",
                 e.getValue());
 
-        log.info("MethodArgumentTypeMismatchException 발생: 요청 [{}], 메시지 [{}]",
+        log.debug("MethodArgumentTypeMismatchException 발생: 요청 [{}], 메시지 [{}]",
                 request.getRequestURI(), detailMessage);
 
         return ErrorResponse.toResponseEntity(ErrorCode.BAD_REQUEST, request.getRequestURI(), detailMessage);
