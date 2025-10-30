@@ -16,7 +16,7 @@ public class User extends BaseEntity {
     private Integer id;
     @Column(nullable = false, unique = true)
     private String username;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
     private String oauthProvider;
     private String oauthId;
