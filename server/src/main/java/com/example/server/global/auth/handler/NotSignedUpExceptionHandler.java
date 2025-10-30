@@ -1,6 +1,7 @@
 package com.example.server.global.auth.handler;
 
 import com.example.server.global.auth.exception.NotSignedUpException;
+import com.example.server.global.auth.exception.WrongOAuth2ProviderException;
 import com.example.server.global.error.ErrorCode;
 import com.example.server.global.error.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,5 +43,13 @@ public class NotSignedUpExceptionHandler {
         response.addHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
 
         return ErrorResponse.toResponseEntity(ErrorCode.REQUIRES_SIGNUP, request.getRequestURI());
+    }
+
+    @ExceptionHandler(WrongOAuth2ProviderException.class)
+    public ResponseEntity<ErrorResponse> handleWrongOAuth2ProviderException(
+            WrongOAuth2ProviderException e,
+            HttpServletRequest request
+    ) {
+        return ErrorResponse.
     }
 }
