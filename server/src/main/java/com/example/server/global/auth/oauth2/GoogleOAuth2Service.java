@@ -66,6 +66,7 @@ public class GoogleOAuth2Service implements OAuth2Service {
 
         HttpEntity<String> request = new HttpEntity<>(body, headers);
 
+        // TODO: Authorization Code로 인증 실패 시 응답 처리
         ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(
                 tokenUri,
                 request,

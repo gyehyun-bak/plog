@@ -32,7 +32,7 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request, HttpServletResponse response) {
-        OAuth2UserInfo oAuth2UserInfo = oAuth2ServiceManager.getOAuth2UserInfo(request.getProvider(), request.getCode());
+        OAuth2UserInfo oAuth2UserInfo = oAuth2ServiceManager.getOAuth2UserInfo(request.provider(), request.code());
         if (oAuth2UserInfo == null) {
             throw new OAuth2ProviderNotSupportedException();
         }
@@ -41,7 +41,7 @@ public class AuthService {
         User user = userRepository.findByEmail(oAuth2UserInfo.email()).orElseThrow(() -> new NotSignedUpException(oAuth2UserInfo));
 
         // Email은 존재하지만 요청한 Provider로 가입되지 않은 경우
-        if (!user.getOauthProvider().equals(request.getProvider())) {
+        if (!user.getOauthProvider().equals(request.provider())) {
             throw new WrongOAuth2ProviderException(user.getOauthProvider());
         }
 

@@ -34,17 +34,17 @@ public class LoginExceptionHandler {
         HttpSession session = request.getSession(true);
         session.setAttribute("oAuth2User", e.getOAuth2UserInfo());
 
-        // 세션 ID를 쿠키로 설정
-        ResponseCookie sessionCookie = ResponseCookie.from("SESSIONID", session.getId())
-                .path("/")
-                .httpOnly(true)
-                .secure(false) // TODO: HTTPS 설정 후 true로 변환
-                .sameSite("Lax")
-                .maxAge(60 * 10) // 10분
-                .build();
-
-        // 쿠키 헤더 추가
-        response.addHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
+//        // 세션 ID를 쿠키로 설정
+//        ResponseCookie sessionCookie = ResponseCookie.from("SESSIONID", session.getId())
+//                .path("/")
+//                .httpOnly(true)
+//                .secure(false) // TODO: HTTPS 설정 후 true로 변환
+//                .sameSite("Lax")
+//                .maxAge(60 * 10) // 10분
+//                .build();
+//
+//        // 쿠키 헤더 추가
+//        response.addHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
 
         return ErrorResponse.toResponseEntity(ErrorCode.REQUIRES_SIGNUP, request.getRequestURI());
     }
