@@ -18,25 +18,25 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ErrorResponse> handleBaseException(BaseException e, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse<Void>> handleBaseException(BaseException e, HttpServletRequest request) {
         log.debug("BaseException 발생: 요청 [{}], 코드 [{}], 메시지 [{}]",
                 request.getRequestURI(), e.getErrorCode(), e.getMessage());
         return ErrorResponse.toResponseEntity(e.getErrorCode(), request.getRequestURI());
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
+    public ResponseEntity<ErrorResponse<Void>> handleNoResourceFoundException(
             HttpServletRequest request) {
         return ErrorResponse.toResponseEntity(ErrorCode.RESOURCE_NOT_FOUND, request.getRequestURI());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse<Void>> handleHttpRequestMethodNotSupportedException(HttpServletRequest request) {
         return ErrorResponse.toResponseEntity(ErrorCode.METHOD_NOT_ALLOWED, request.getRequestURI());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
+    public ResponseEntity<ErrorResponse<Void>> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException e,
             HttpServletRequest request) {
 
@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
+    public ResponseEntity<ErrorResponse<Void>> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e,
             HttpServletRequest request) {
 
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+    public ResponseEntity<ErrorResponse<Void>> handleMethodArgumentTypeMismatchException(
             MethodArgumentTypeMismatchException e,
             HttpServletRequest request) {
 
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse<Void>> handleException(Exception e, HttpServletRequest request) {
         log.warn("예기치 못한 예외 발생: 요청 [{}]", request.getRequestURI(), e);
         return ErrorResponse.toResponseEntity(ErrorCode.INTERNAL_SERVER_ERROR, request.getRequestURI());
     }
