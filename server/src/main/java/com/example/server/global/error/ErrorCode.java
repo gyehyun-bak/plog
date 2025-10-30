@@ -23,6 +23,7 @@ public enum ErrorCode {
     // UNAUTHORIZED
     AUTHENTICATION_REQUIRED(HttpStatus.UNAUTHORIZED, "인증이 필요한 요청입니다."),
     JWT_AUTHENTICATION_FAIL(HttpStatus.UNAUTHORIZED, "JWT 인증에 실패하였습니다."),
+    REQUIRES_SIGNUP(HttpStatus.UNAUTHORIZED, "회원가입이 필요합니다. 쿠키에 sessionId가 발급되었습니다. '/auth/signup' 으로 가입 요청을 진행해주세요."),
 
     // ETC
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
