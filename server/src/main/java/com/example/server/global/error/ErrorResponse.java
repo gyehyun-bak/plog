@@ -41,6 +41,17 @@ public class ErrorResponse<T> {
     }
 
     /**
+     * 기본 메시지 + data
+     */
+    public static <T> ResponseEntity<ErrorResponse<T>> toResponseEntity(
+            ErrorCode code,
+            String path,
+            T data
+    ) {
+        return toResponseEntity(code, path, null, data);
+    }
+
+    /**
      * 추가 메시지 및 응답 데이터 사용
      * @param code 에러코드
      * @param path 요청한 위치
