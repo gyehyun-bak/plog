@@ -4,7 +4,9 @@ import com.example.server.domain.user.domain.User;
 import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.global.auth.dto.LoginRequest;
 import com.example.server.global.auth.dto.LoginResponse;
+import com.example.server.global.auth.dto.OAuth2UserInfo;
 import com.example.server.global.auth.dto.ProviderResponse;
+import com.example.server.global.auth.exception.NotSignedUpException;
 import com.example.server.global.auth.exception.OAuth2ProviderNotSupportedException;
 import com.example.server.global.auth.exception.UsernameTakenException;
 import com.example.server.global.auth.oauth2.OAuth2ServiceManager;
@@ -29,13 +31,12 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request, HttpServletResponse response) {
-        String oAuthId = oAuth2ServiceManager.getOAuthId(request.getProvider(), request.getCode());
-        if (oAuthId == null) {
+        OAuth2UserInfo oAuth2UserInfo = oAuth2ServiceManager.getOAuth2UserInfo(request.getProvider(), request.getCode());
+        if (oAuth2UserInfo == null) {
             throw new OAuth2ProviderNotSupportedException();
         }
 
-        User user = userRepository.findByOauthProviderAndOauthId(request.getProvider(), oAuthId)
-                .orElse(createNewUser(request.getUsername(), request.getProvider(), oAuthId));
+        User user = userRepository.findByEmail(oAuth2UserInfo.email()).orElseThrow(() -> new NotSignedUpException(oAuth2UserInfo));
 
         String accessToken = jwtUtil.createAccessToken(user.getId());
         String refreshToken = jwtUtil.createRefreshToken(user.getId());

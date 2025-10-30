@@ -1,10 +1,10 @@
 package com.example.server.global.auth.oauth2;
 
-import com.example.server.global.auth.dto.OAuth2Response;
+import com.example.server.global.auth.dto.OAuth2UserInfo;
 import com.example.server.global.auth.dto.ProviderResponse;
 
 public interface OAuth2Service {
     boolean supports(String provider);
-    OAuth2Response getOAuthId(String code);
+    OAuth2UserInfo getOAuth2Response(String code);
     ProviderResponse getProvider();
 }
