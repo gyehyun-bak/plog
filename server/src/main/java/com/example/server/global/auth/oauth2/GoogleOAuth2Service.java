@@ -1,5 +1,6 @@
 package com.example.server.global.auth.oauth2;
 
+import com.example.server.global.auth.dto.OAuth2Response;
 import com.example.server.global.auth.dto.ProviderResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -47,9 +48,10 @@ public class GoogleOAuth2Service implements OAuth2Service {
     }
 
     @Override
-    public String getOAuthId(String code) {
+    public OAuth2Response getOAuthId(String code) {
         GoogleTokenResponse tokenResponse = getAccessToken(code);
-        return getUserInfo(tokenResponse.getAccessToken()).getSub();
+        GoogleUserInfo userInfo = getUserInfo(tokenResponse.getAccessToken());
+        return new OAuth2Response(userInfo.sub, userInfo.getEmail());
     }
 
     private GoogleTokenResponse getAccessToken(String code) {
