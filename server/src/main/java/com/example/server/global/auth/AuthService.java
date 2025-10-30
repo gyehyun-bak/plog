@@ -4,9 +4,12 @@ import com.example.server.domain.user.domain.User;
 import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.global.auth.dto.LoginRequest;
 import com.example.server.global.auth.dto.LoginResponse;
+import com.example.server.global.auth.dto.OAuth2UserInfo;
 import com.example.server.global.auth.dto.ProviderResponse;
+import com.example.server.global.auth.exception.NotSignedUpException;
 import com.example.server.global.auth.exception.OAuth2ProviderNotSupportedException;
 import com.example.server.global.auth.exception.UsernameTakenException;
+import com.example.server.global.auth.exception.WrongOAuth2ProviderException;
 import com.example.server.global.auth.oauth2.OAuth2ServiceManager;
 import com.example.server.global.security.jwt.JwtUtil;
 import jakarta.servlet.http.Cookie;
@@ -29,13 +32,18 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request, HttpServletResponse response) {
-        String oAuthId = oAuth2ServiceManager.getOAuthId(request.getProvider(), request.getCode());
-        if (oAuthId == null) {
+        OAuth2UserInfo oAuth2UserInfo = oAuth2ServiceManager.getOAuth2UserInfo(request.provider(), request.code());
+        if (oAuth2UserInfo == null) {
             throw new OAuth2ProviderNotSupportedException();
         }
 
-        User user = userRepository.findByOauthProviderAndOauthId(request.getProvider(), oAuthId)
-                .orElse(createNewUser(request.getUsername(), request.getProvider(), oAuthId));
+        // Email을 통해 유저 조회, 실패 시 회원가입 절차를 위해 예외 발생
+        User user = userRepository.findByEmail(oAuth2UserInfo.email()).orElseThrow(() -> new NotSignedUpException(oAuth2UserInfo));
+
+        // Email은 존재하지만 요청한 Provider로 가입되지 않은 경우
+        if (!user.getOauthProvider().equals(request.provider())) {
+            throw new WrongOAuth2ProviderException(user.getOauthProvider());
+        }
 
         String accessToken = jwtUtil.createAccessToken(user.getId());
         String refreshToken = jwtUtil.createRefreshToken(user.getId());

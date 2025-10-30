@@ -1,5 +1,6 @@
 package com.example.server.global.auth.oauth2;
 
+import com.example.server.global.auth.dto.OAuth2UserInfo;
 import com.example.server.global.auth.dto.ProviderResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -47,9 +48,10 @@ public class GoogleOAuth2Service implements OAuth2Service {
     }
 
     @Override
-    public String getOAuthId(String code) {
+    public OAuth2UserInfo getOAuth2Response(String code) {
         GoogleTokenResponse tokenResponse = getAccessToken(code);
-        return getUserInfo(tokenResponse.getAccessToken()).getSub();
+        GoogleUserInfo userInfo = getUserInfo(tokenResponse.getAccessToken());
+        return new OAuth2UserInfo(userInfo.sub, userInfo.getEmail());
     }
 
     private GoogleTokenResponse getAccessToken(String code) {
@@ -64,6 +66,7 @@ public class GoogleOAuth2Service implements OAuth2Service {
 
         HttpEntity<String> request = new HttpEntity<>(body, headers);
 
+        // TODO: Authorization Code로 인증 실패 시 응답 처리
         ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(
                 tokenUri,
                 request,
