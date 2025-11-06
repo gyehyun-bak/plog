@@ -1,9 +1,10 @@
 package com.example.server.global.auth;
 
-import com.example.server.global.auth.dto.LoginRequest;
-import com.example.server.global.auth.dto.LoginResponse;
-import com.example.server.global.auth.dto.ProviderResponse;
+import com.example.server.global.auth.dto.*;
+import com.example.server.global.error.BaseException;
+import com.example.server.global.error.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,5 +35,18 @@ public class AuthController {
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         authService.logout(response);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request, HttpSession session) {
+        OAuth2UserInfo oAuth2UserInfo = (OAuth2UserInfo) session.getAttribute("oAuth2UserInfo");
+
+        if (oAuth2UserInfo == null) {
+            throw new BaseException(ErrorCode.INVALID_LOGIN_SESSION);
+        }
+
+        SignupResponse response = authService.signup(request.username(), oAuth2UserInfo);
+        session.removeAttribute("oAuth2UserInfo");
+        return ResponseEntity.ok(response);
     }
 }

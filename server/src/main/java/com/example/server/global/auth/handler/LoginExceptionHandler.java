@@ -6,10 +6,7 @@ import com.example.server.global.auth.exception.WrongOAuth2ProviderException;
 import com.example.server.global.error.ErrorCode;
 import com.example.server.global.error.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -27,25 +24,11 @@ public class LoginExceptionHandler {
     @ExceptionHandler(NotSignedUpException.class)
     public ResponseEntity<ErrorResponse<Void>> handleNotSignedUpException(
             NotSignedUpException e,
-            HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletRequest request
     ) {
         // 세션 생성 및 OAuth 정보 저장
         HttpSession session = request.getSession(true);
-        session.setAttribute("oAuth2User", e.getOAuth2UserInfo());
-
-//        // 세션 ID를 쿠키로 설정
-//        ResponseCookie sessionCookie = ResponseCookie.from("SESSIONID", session.getId())
-//                .path("/")
-//                .httpOnly(true)
-//                .secure(false) // TODO: HTTPS 설정 후 true로 변환
-//                .sameSite("Lax")
-//                .maxAge(60 * 10) // 10분
-//                .build();
-//
-//        // 쿠키 헤더 추가
-//        response.addHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
-
+        session.setAttribute("oAuth2UserInfo", e.getOAuth2UserInfo());
         return ErrorResponse.toResponseEntity(ErrorCode.REQUIRES_SIGNUP, request.getRequestURI());
     }
 

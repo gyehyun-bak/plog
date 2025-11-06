@@ -2,10 +2,7 @@ package com.example.server.global.auth;
 
 import com.example.server.domain.user.domain.User;
 import com.example.server.domain.user.repository.UserRepository;
-import com.example.server.global.auth.dto.LoginRequest;
-import com.example.server.global.auth.dto.LoginResponse;
-import com.example.server.global.auth.dto.OAuth2UserInfo;
-import com.example.server.global.auth.dto.ProviderResponse;
+import com.example.server.global.auth.dto.*;
 import com.example.server.global.auth.exception.NotSignedUpException;
 import com.example.server.global.auth.exception.OAuth2ProviderNotSupportedException;
 import com.example.server.global.auth.exception.UsernameTakenException;
@@ -14,12 +11,15 @@ import com.example.server.global.auth.oauth2.OAuth2ServiceManager;
 import com.example.server.global.security.jwt.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -81,5 +81,9 @@ public class AuthService {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
+    }
+
+    public SignupResponse signup(String username, OAuth2UserInfo oAuth2UserInfo) {
+        return null;
     }
 }
