@@ -72,17 +72,6 @@ public class AuthService {
         deleteRefreshTokenFromCookie(response);
     }
 
-    private User createNewUser(String username, String oAuthProvider, String oAuthId) {
-        if (userRepository.existsByUsername(username)) {
-            throw new UsernameTakenException();
-        }
-
-        User user = User.create(username, "", oAuthProvider, oAuthId);
-        userRepository.save(user);
-
-        return user;
-    }
-
     private void storeRefreshTokenInCookie(HttpServletResponse response, String refreshToken) {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setMaxAge(jwtUtil.getRefreshTokenMaxAgeInSeconds());
