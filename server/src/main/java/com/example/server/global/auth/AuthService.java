@@ -61,15 +61,15 @@ public class AuthService {
         return new SignupResponse(getAccessToken(response, user));
     }
 
+    public void logout(HttpServletResponse response) {
+        deleteRefreshTokenFromCookie(response);
+    }
+
     private String getAccessToken(HttpServletResponse response, User user) {
         String accessToken = jwtUtil.createAccessToken(user.getId());
         String refreshToken = jwtUtil.createRefreshToken(user.getId());
         storeRefreshTokenInCookie(response, refreshToken);
         return accessToken;
-    }
-
-    public void logout(HttpServletResponse response) {
-        deleteRefreshTokenFromCookie(response);
     }
 
     private void storeRefreshTokenInCookie(HttpServletResponse response, String refreshToken) {
