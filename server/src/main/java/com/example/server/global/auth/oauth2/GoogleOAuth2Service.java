@@ -48,10 +48,10 @@ public class GoogleOAuth2Service implements OAuth2Service {
     }
 
     @Override
-    public OAuth2UserInfo getOAuth2Response(String code) {
+    public OAuth2UserInfo getOAuth2UserInfo(String code) {
         GoogleTokenResponse tokenResponse = getAccessToken(code);
         GoogleUserInfo userInfo = getUserInfo(tokenResponse.getAccessToken());
-        return new OAuth2UserInfo(userInfo.sub, userInfo.getEmail());
+        return new OAuth2UserInfo(PROVIDER_NAME, userInfo.sub, userInfo.getEmail());
     }
 
     private GoogleTokenResponse getAccessToken(String code) {

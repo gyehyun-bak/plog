@@ -1,6 +1,7 @@
 package com.example.server.global.auth;
 
 import com.example.server.global.auth.dto.*;
+import com.example.server.global.auth.exception.InvalidLoginSessionException;
 import com.example.server.global.error.BaseException;
 import com.example.server.global.error.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,14 +39,19 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request, HttpSession session) {
+    public ResponseEntity<SignupResponse> signup(
+            HttpServletResponse servletResponse,
+            @RequestBody SignupRequest request,
+            HttpSession session
+    ) {
         OAuth2UserInfo oAuth2UserInfo = (OAuth2UserInfo) session.getAttribute("oAuth2UserInfo");
 
+        // 기존에 만들어진 로그인 세션이 없는 경우 예외 발생
         if (oAuth2UserInfo == null) {
-            throw new BaseException(ErrorCode.INVALID_LOGIN_SESSION);
+            throw new InvalidLoginSessionException();
         }
 
-        SignupResponse response = authService.signup(request.username(), oAuth2UserInfo);
+        SignupResponse response = authService.signup(servletResponse, request.username(), oAuth2UserInfo);
         session.removeAttribute("oAuth2UserInfo");
         return ResponseEntity.ok(response);
     }

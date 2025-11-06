@@ -19,7 +19,7 @@ public class OAuth2ServiceManager {
     public OAuth2UserInfo getOAuth2UserInfo(String provider, String code) {
         for (OAuth2Service service : services) {
             if (service.supports(provider)) {
-                return service.getOAuth2Response(code);
+                return service.getOAuth2UserInfo(code);
             }
         }
         return null;

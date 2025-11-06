@@ -45,11 +45,27 @@ public class AuthService {
             throw new WrongOAuth2ProviderException(user.getOauthProvider());
         }
 
+        String accessToken = getAccessToken(response, user);
+
+        return new LoginResponse(accessToken);
+    }
+
+    public SignupResponse signup(HttpServletResponse response, String username, OAuth2UserInfo oAuth2UserInfo) {
+        if (userRepository.existsByUsername(username)) {
+            throw new UsernameTakenException();
+        }
+
+        User user = User.create(username, oAuth2UserInfo.email(), oAuth2UserInfo.oAuthProvider(), oAuth2UserInfo.oAuthId());
+        userRepository.save(user);
+
+        return new SignupResponse(getAccessToken(response, user));
+    }
+
+    private String getAccessToken(HttpServletResponse response, User user) {
         String accessToken = jwtUtil.createAccessToken(user.getId());
         String refreshToken = jwtUtil.createRefreshToken(user.getId());
         storeRefreshTokenInCookie(response, refreshToken);
-
-        return new LoginResponse(accessToken);
+        return accessToken;
     }
 
     public void logout(HttpServletResponse response) {
@@ -81,9 +97,5 @@ public class AuthService {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
-    }
-
-    public SignupResponse signup(String username, OAuth2UserInfo oAuth2UserInfo) {
-        return null;
     }
 }
