@@ -1,11 +1,8 @@
-package com.example.server.global.auth;
+package com.example.server.global.auth.service;
 
 import com.example.server.domain.user.domain.User;
 import com.example.server.domain.user.repository.UserRepository;
-import com.example.server.global.auth.dto.LoginRequest;
-import com.example.server.global.auth.dto.LoginResponse;
-import com.example.server.global.auth.dto.OAuth2UserInfo;
-import com.example.server.global.auth.dto.ProviderResponse;
+import com.example.server.global.auth.dto.*;
 import com.example.server.global.auth.exception.NotSignedUpException;
 import com.example.server.global.auth.exception.OAuth2ProviderNotSupportedException;
 import com.example.server.global.auth.exception.UsernameTakenException;
@@ -16,10 +13,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -45,26 +44,31 @@ public class AuthService {
             throw new WrongOAuth2ProviderException(user.getOauthProvider());
         }
 
-        String accessToken = jwtUtil.createAccessToken(user.getId());
-        String refreshToken = jwtUtil.createRefreshToken(user.getId());
-        storeRefreshTokenInCookie(response, refreshToken);
+        String accessToken = getAccessToken(response, user);
 
         return new LoginResponse(accessToken);
+    }
+
+    public SignupResponse signup(HttpServletResponse response, String username, OAuth2UserInfo oAuth2UserInfo) {
+        if (userRepository.existsByUsername(username)) {
+            throw new UsernameTakenException();
+        }
+
+        User user = User.create(username, oAuth2UserInfo.email(), oAuth2UserInfo.oAuthProvider(), oAuth2UserInfo.oAuthId());
+        userRepository.save(user);
+
+        return new SignupResponse(getAccessToken(response, user));
     }
 
     public void logout(HttpServletResponse response) {
         deleteRefreshTokenFromCookie(response);
     }
 
-    private User createNewUser(String username, String oAuthProvider, String oAuthId) {
-        if (userRepository.existsByUsername(username)) {
-            throw new UsernameTakenException();
-        }
-
-        User user = User.create(username, "", oAuthProvider, oAuthId);
-        userRepository.save(user);
-
-        return user;
+    private String getAccessToken(HttpServletResponse response, User user) {
+        String accessToken = jwtUtil.createAccessToken(user.getId());
+        String refreshToken = jwtUtil.createRefreshToken(user.getId());
+        storeRefreshTokenInCookie(response, refreshToken);
+        return accessToken;
     }
 
     private void storeRefreshTokenInCookie(HttpServletResponse response, String refreshToken) {

@@ -5,6 +5,6 @@ import com.example.server.global.auth.dto.ProviderResponse;
 
 public interface OAuth2Service {
     boolean supports(String provider);
-    OAuth2UserInfo getOAuth2Response(String code);
+    OAuth2UserInfo getOAuth2UserInfo(String code);
     ProviderResponse getProvider();
 }
