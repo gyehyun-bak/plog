@@ -1,9 +1,9 @@
-package com.example.server.global.auth;
+package com.example.server.global.auth.controller;
 
+import com.example.server.global.auth.service.AuthService;
+import com.example.server.global.auth.dto.SignupRequest;
 import com.example.server.global.auth.dto.*;
 import com.example.server.global.auth.exception.InvalidLoginSessionException;
-import com.example.server.global.error.BaseException;
-import com.example.server.global.error.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;

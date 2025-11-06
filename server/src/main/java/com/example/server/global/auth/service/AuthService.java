@@ -1,4 +1,4 @@
-package com.example.server.global.auth;
+package com.example.server.global.auth.service;
 
 import com.example.server.domain.user.domain.User;
 import com.example.server.domain.user.repository.UserRepository;
@@ -11,7 +11,6 @@ import com.example.server.global.auth.oauth2.OAuth2ServiceManager;
 import com.example.server.global.security.jwt.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
