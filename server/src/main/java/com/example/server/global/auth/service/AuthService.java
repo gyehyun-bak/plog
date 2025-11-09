@@ -86,4 +86,12 @@ public class AuthService {
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
+
+    public ValidateUsernameResponse validateUsername(String username) {
+        if (userRepository.existsByUsername(username)) {
+            throw new UsernameTakenException();
+        }
+
+        return new ValidateUsernameResponse(username, true);
+    }
 }
