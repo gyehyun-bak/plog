@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,7 +42,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> signup(
             HttpServletResponse servletResponse,
-            @RequestBody SignupRequest request,
+            @RequestBody @Validated SignupRequest request,
             HttpSession session
     ) {
         OAuth2UserInfo oAuth2UserInfo = (OAuth2UserInfo) session.getAttribute("oAuth2UserInfo");
@@ -54,5 +55,12 @@ public class AuthController {
         SignupResponse response = authService.signup(servletResponse, request.username(), oAuth2UserInfo);
         session.removeAttribute("oAuth2UserInfo");
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/validate-username")
+    public ResponseEntity<ValidateUsernameResponse> checkUsername(
+            @RequestBody @Validated ValidateUsernameRequest request
+    ) {
+        return ResponseEntity.ok(authService.validateUsername(request.username()));
     }
 }
