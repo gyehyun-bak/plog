@@ -30,4 +30,9 @@ public class Post extends BaseEntity {
                 .content(content)
                 .build();
     }
+
+    public void edit(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
