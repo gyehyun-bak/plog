@@ -29,7 +29,7 @@ class PostTest {
 
     @Test
     @DisplayName("Post 수정")
-    void editPost() {
+    void updateTitleAndContentPost() {
         // given
         int userId = 0;
         String title = "title";
@@ -41,7 +41,7 @@ class PostTest {
         // when
         String newTitle = "newTitle";
         String newContent = "newContent";
-        post.edit(newTitle, newContent);
+        post.updateTitleAndContent(newTitle, newContent);
 
         // then
         assertThat(post.getTitle()).isEqualTo(newTitle);

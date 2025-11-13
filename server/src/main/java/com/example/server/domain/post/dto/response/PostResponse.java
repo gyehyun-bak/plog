@@ -10,6 +10,7 @@ public record PostResponse(
         UserResponse author,
         String title,
         String content,
+        LocalDateTime updatedAt,
         LocalDateTime createdAt
 ) {
     public static PostResponse fromEntity(Post post) {
@@ -18,6 +19,7 @@ public record PostResponse(
                 UserResponse.fromEntity(post.getAuthor()),
                 post.getTitle(),
                 post.getContent(),
+                post.getUpdatedAt(),
                 post.getCreatedAt()
         );
     }
