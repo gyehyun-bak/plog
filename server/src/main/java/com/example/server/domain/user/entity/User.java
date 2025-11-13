@@ -1,4 +1,4 @@
-package com.example.server.domain.user.domain;
+package com.example.server.domain.user.entity;
 
 import com.example.server.global.audit.BaseEntity;
 import jakarta.persistence.*;

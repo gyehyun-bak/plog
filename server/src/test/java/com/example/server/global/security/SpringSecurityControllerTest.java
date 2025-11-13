@@ -1,6 +1,6 @@
 package com.example.server.global.security;
 
-import com.example.server.domain.user.domain.User;
+import com.example.server.domain.user.entity.User;
 import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.global.security.jwt.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package com.example.server.domain.user.domain;
+package com.example.server.domain.user.entity;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package com.example.server.global.auth.validation;
 
-import com.example.server.domain.user.domain.User;
+import com.example.server.domain.user.entity.User;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.ConstraintViolationException;
