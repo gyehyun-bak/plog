@@ -1,10 +1,12 @@
 package com.example.server.domain.post.service;
 
+import com.example.server.domain.post.dto.request.PostRequest;
 import com.example.server.domain.post.dto.response.PostResponse;
 import com.example.server.domain.post.entity.Post;
 import com.example.server.domain.post.exception.PostNotFoundException;
 import com.example.server.domain.post.repository.PostRepository;
 import com.example.server.domain.user.entity.User;
+import com.example.server.domain.user.exception.UserNotFoundException;
 import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.global.error.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +54,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 postId로 조회시 PostNotFoundException을 던진다.")
+    @DisplayName("postId에 해당하는 Post가 존재하지 않을 경우 PostNotFoundException이 발생한다.")
     void throwPostNotFoundExceptionWhenPostWithPostIdDoesntExists() {
         // given
         int invalidPostId = 9999;
@@ -62,5 +64,43 @@ class PostServiceTest {
                 .isInstanceOf(PostNotFoundException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.POST_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("생성하고자 하는 User의 id와 PostRequest로 새로운 Post를 생성할 수 있다.")
+    void canCreateNewPostWithUserIdAndPostRequest() {
+        // given
+        User author = User.create("username", "test@email.com", "TEST", "test-id");
+        userRepository.save(author);
+
+        String title = "title";
+        String content = "content";
+
+        PostRequest request = new PostRequest(title, content);
+
+        // when
+        PostResponse saved = postService.createPost(author.getId(), request);
+
+        // then
+        assertThat(saved.postId()).isNotNull();
+        assertThat(saved.author().userId()).isEqualTo(author.getId());
+        assertThat(saved.author().username()).isEqualTo(author.getUsername());
+        assertThat(saved.title()).isEqualTo(title);
+        assertThat(saved.content()).isEqualTo(content);
+        assertThat(saved.createdAt()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("authorId에 해당하는 User가 존재하지 않을 경우 UserNotFoundException이 발생한다.")
+    void throwUserNotFoundExceptionIfUserWithAuthorIdDoesntExists() {
+        // given
+        int invalidUserId = 9999;
+        PostRequest request = new PostRequest("title", "content");
+
+        // when then
+        assertThatThrownBy(() -> postService.createPost(invalidUserId, request))
+                .isInstanceOf(UserNotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.USER_NOT_FOUND);
     }
 }
