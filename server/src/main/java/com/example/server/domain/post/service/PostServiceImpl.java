@@ -1,5 +1,6 @@
 package com.example.server.domain.post.service;
 
+import com.example.server.domain.post.dto.request.PostRequest;
 import com.example.server.domain.post.dto.response.PostResponse;
 import com.example.server.domain.post.entity.Post;
 import com.example.server.domain.post.exception.PostNotFoundException;
@@ -17,5 +18,10 @@ public class PostServiceImpl implements PostService {
     public PostResponse getById(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
         return PostResponse.fromEntity(post);
+    }
+
+    @Override
+    public PostResponse createPost(PostRequest postRequest) {
+        return null;
     }
 }
