@@ -4,6 +4,7 @@ import com.example.server.domain.post.dto.request.PostRequest;
 import com.example.server.domain.post.dto.response.PostResponse;
 import com.example.server.domain.post.entity.Post;
 import com.example.server.domain.post.exception.PostNotFoundException;
+import com.example.server.domain.post.exception.UserNotAllowedDeletePostException;
 import com.example.server.domain.post.exception.UserNotAllowedUpdatePostException;
 import com.example.server.domain.post.repository.PostRepository;
 import com.example.server.domain.user.entity.User;
@@ -183,5 +184,72 @@ class PostServiceTest {
                 .isInstanceOf(UserNotAllowedUpdatePostException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.USER_NOT_ALLOWED_UPDATE_POST);
+    }
+
+    @Test
+    @DisplayName("작성자는 자신의 Post를 삭제할 수 있다.")
+    void canDeletePostByAuthor() {
+        // given
+        User author = User.create("author", "author@email.com", "Author", "author-id");
+        userRepository.save(author);
+        Post post = Post.create(author, "title", "content");
+        postRepository.save(post);
+
+        // when
+        postService.deletePost(author.getId(), post.getPostId());
+
+        // then
+        assertThat(postRepository.findById(post.getPostId())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 userId로 삭제 요청 시 UserNotFoundException 발생")
+    void throwUserNotFoundExceptionWhenUserIdDoesNotExistForDelete() {
+        // given
+        Post post = Post.create(User.create("author", "author@email.com", "Author", "author-id"), "title", "content");
+        postRepository.save(post);
+
+        int invalidUserId = 9999;
+
+        // when then
+        assertThatThrownBy(() -> postService.deletePost(invalidUserId, post.getPostId()))
+                .isInstanceOf(UserNotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.USER_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 postId로 삭제 요청 시 PostNotFoundException 발생")
+    void throwPostNotFoundExceptionWhenPostIdDoesNotExistForDelete() {
+        // given
+        User author = User.create("author", "author@email.com", "Author", "author-id");
+        userRepository.save(author);
+
+        int invalidPostId = 9999;
+
+        // when then
+        assertThatThrownBy(() -> postService.deletePost(author.getId(), invalidPostId))
+                .isInstanceOf(PostNotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.POST_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("권한이 없는 user가 Post를 삭제하려고 하면 UserNotAllowedDeletePostException 발생")
+    void throwUserNotAllowedDeletePostExceptionWhenUnauthorizedUserTriesToDeletePost() {
+        // given
+        User author = User.create("author", "author@email.com", "Author", "author-id");
+        userRepository.save(author);
+        Post post = Post.create(author, "title", "content");
+        postRepository.save(post);
+
+        User otherUser = User.create("other", "other@email.com", "Other", "other-id");
+        userRepository.save(otherUser);
+
+        // when then
+        assertThatThrownBy(() -> postService.deletePost(otherUser.getId(), post.getPostId()))
+                .isInstanceOf(UserNotAllowedDeletePostException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.USER_NOT_ALLOWED_DELETE_POST);
     }
 }

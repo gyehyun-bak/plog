@@ -31,6 +31,7 @@ public enum ErrorCode {
     // FORBIDDEN
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
     USER_NOT_ALLOWED_UPDATE_POST(HttpStatus.FORBIDDEN, "해당 게시물을 수정할 권한이 없습니다."),
+    USER_NOT_ALLOWED_DELETE_POST(HttpStatus.FORBIDDEN, "해당 게시물을 삭제할 권한이 없습니다."),
 
     // INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");

@@ -4,6 +4,7 @@ import com.example.server.domain.post.dto.request.PostRequest;
 import com.example.server.domain.post.dto.response.PostResponse;
 import com.example.server.domain.post.entity.Post;
 import com.example.server.domain.post.exception.PostNotFoundException;
+import com.example.server.domain.post.exception.UserNotAllowedDeletePostException;
 import com.example.server.domain.post.exception.UserNotAllowedUpdatePostException;
 import com.example.server.domain.post.repository.PostRepository;
 import com.example.server.domain.user.entity.User;
@@ -55,5 +56,17 @@ public class PostServiceImpl implements PostService {
         }
 
         return PostResponse.fromEntity(post);
+    }
+
+    @Override
+    public void deletePost(int userId, int postId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+
+        if (!post.getAuthor().equals(user)) {
+            throw new UserNotAllowedDeletePostException();
+        }
+
+        postRepository.delete(post);
     }
 }

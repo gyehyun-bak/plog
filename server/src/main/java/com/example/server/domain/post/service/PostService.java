@@ -3,6 +3,7 @@ package com.example.server.domain.post.service;
 import com.example.server.domain.post.dto.request.PostRequest;
 import com.example.server.domain.post.dto.response.PostResponse;
 import com.example.server.domain.post.exception.PostNotFoundException;
+import com.example.server.domain.post.exception.UserNotAllowedDeletePostException;
 import com.example.server.domain.post.exception.UserNotAllowedUpdatePostException;
 import com.example.server.domain.user.exception.UserNotFoundException;
 
@@ -39,4 +40,17 @@ public interface PostService {
      * @throws UserNotAllowedUpdatePostException 권한이 없는 User가 Post를 업데이트할 경우 발생
      */
     PostResponse updatePost(int userId, int postId, PostRequest postRequest);
+
+    /**
+     * 기존 Post를 삭제합니다.
+     *
+     * <p> 삭제 권한은 Post 작성자만 허용됩니다.
+     *
+     * @param userId 삭제를 요청하는 User의 고유 식별자
+     * @param postId 삭제할 Post의 고유 식별자
+     * @throws UserNotFoundException userId에 해당하는 User가 존재하지 않을 경우 발생
+     * @throws PostNotFoundException postId에 해당하는 Post가 존재하지 않을 경우 발생
+     * @throws UserNotAllowedDeletePostException 권한이 없는 User가 Post를 삭제하려고 할 경우 발생
+     */
+    void deletePost(int userId, int postId);
 }
