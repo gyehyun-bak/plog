@@ -36,12 +36,6 @@ public class Post extends BaseEntity {
                 .build();
     }
 
-    public void updateTitleAndContent(String title, String content) {
-        this.title = title;
-        this.content = content;
-        this.updatedAt = LocalDateTime.now();
-    }
-
     public void updateTitle(String title) {
         this.title = title;
         this.updatedAt = LocalDateTime.now();

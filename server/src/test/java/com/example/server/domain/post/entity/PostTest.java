@@ -28,8 +28,8 @@ class PostTest {
     }
 
     @Test
-    @DisplayName("Post 수정")
-    void updateTitleAndContentPost() {
+    @DisplayName("Post title 수정")
+    void updatePostTitle() {
         // given
         int userId = 0;
         String title = "title";
@@ -40,11 +40,28 @@ class PostTest {
 
         // when
         String newTitle = "newTitle";
-        String newContent = "newContent";
-        post.updateTitleAndContent(newTitle, newContent);
+        post.updateTitle(newTitle);
 
         // then
         assertThat(post.getTitle()).isEqualTo(newTitle);
+    }
+
+    @Test
+    @DisplayName("Post content 수정")
+    void updatePostContent() {
+        // given
+        int userId = 0;
+        String title = "title";
+        String content = "content";
+        User author = User.withId(userId); // 테스트용 객체 생성
+
+        Post post = Post.create(author, title, content);
+
+        // when
+        String newContent = "newContent";
+        post.updateContent(newContent);
+
+        // then
         assertThat(post.getContent()).isEqualTo(newContent);
     }
 }
