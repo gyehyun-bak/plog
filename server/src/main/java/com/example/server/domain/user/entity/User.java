@@ -1,4 +1,4 @@
-package com.example.server.domain.user.domain;
+package com.example.server.domain.user.entity;
 
 import com.example.server.global.audit.BaseEntity;
 import jakarta.persistence.*;
@@ -30,6 +30,17 @@ public class User extends BaseEntity {
                 .email(email)
                 .oauthProvider(oauthProvider)
                 .oauthId(oauthId)
+                .build();
+    }
+
+    /**
+     * 테스트용 User 객체를 생성합니다. 해당 메서드를 실제 비즈니스 코드에서 사용해서는 안 됩니다.
+     * @param userId 테스트용 userId
+     * @return userId를 id로 갖는 빈 User
+     */
+    public static User withId(int userId) {
+        return User.builder()
+                .id(userId)
                 .build();
     }
 

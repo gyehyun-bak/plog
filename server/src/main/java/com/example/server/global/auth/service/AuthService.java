@@ -1,6 +1,6 @@
 package com.example.server.global.auth.service;
 
-import com.example.server.domain.user.domain.User;
+import com.example.server.domain.user.entity.User;
 import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.global.auth.dto.*;
 import com.example.server.global.auth.exception.NotSignedUpException;

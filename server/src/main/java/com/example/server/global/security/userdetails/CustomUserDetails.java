@@ -1,6 +1,6 @@
 package com.example.server.global.security.userdetails;
 
-import com.example.server.domain.user.domain.User;
+import com.example.server.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
