@@ -1,5 +1,6 @@
 package com.example.server.global.security.userdetails;
 
+import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +14,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            return CustomUserDetails.of(userService.getById(Integer.valueOf(username)));
+            return CustomUserDetails.of(userRepository.findById(Integer.valueOf(username)).orElseThrow(() -> new UsernameNotFoundException("해당하는 ID의 유저가 존재하지 않습니다.")));
         } catch (Exception e) {
             log.debug("Username not found", e);
             throw new UsernameNotFoundException("Username not found");

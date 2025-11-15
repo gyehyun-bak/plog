@@ -1,6 +1,8 @@
 package com.example.server.domain.user.service;
 
+import com.example.server.domain.user.dto.response.UserResponse;
 import com.example.server.domain.user.entity.User;
+import com.example.server.domain.user.exception.UserNotFoundException;
 import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.global.error.BaseException;
 import com.example.server.global.error.ErrorCode;
@@ -16,8 +18,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public User getById(Integer userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+    public UserResponse getById(int userId) {
+        return UserResponse.fromEntity(userRepository.findById(userId).orElseThrow(UserNotFoundException::new));
     }
 
     @Transactional(readOnly = true)
@@ -38,7 +40,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeUsername(Integer userId, String username) {
+    public void changeUsername(int userId, String username) {
         validateUsername(username);
 
         User user = userRepository.findById(userId).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
