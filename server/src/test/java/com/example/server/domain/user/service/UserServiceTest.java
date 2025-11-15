@@ -1,6 +1,8 @@
 package com.example.server.domain.user.service;
 
+import com.example.server.domain.user.dto.response.UserResponse;
 import com.example.server.domain.user.entity.User;
+import com.example.server.domain.user.exception.UserNotFoundException;
 import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.global.error.BaseException;
 import com.example.server.global.error.ErrorCode;
@@ -33,10 +35,11 @@ class UserServiceTest {
         userRepository.save(user);
 
         // when
-        User found = userService.getById(user.getId());
+        UserResponse found = userService.getById(user.getId());
 
         // then
-        assertThat(found).isEqualTo(user);
+        assertThat(found.userId()).isEqualTo(user.getId());
+        assertThat(found.username()).isEqualTo(user.getUsername());
     }
 
     @Test
@@ -46,7 +49,7 @@ class UserServiceTest {
         // when
         // then
         assertThatThrownBy(() -> userService.getById(1))
-                .isInstanceOf(BaseException.class)
+                .isInstanceOf(UserNotFoundException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.USER_NOT_FOUND);
     }
@@ -57,8 +60,7 @@ class UserServiceTest {
         // given
         String username = "test";
 
-        // when
-        // then
+        // when then
         userService.validateUsername(username);
     }
 
