@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class BulkUserInsertLexical {
+public class BulkUserInsert {
 
     private static String url = "jdbc:mysql://localhost:3306/plog?rewriteBatchedStatements=true&useSSL=false";
     private static String dbUsername = "root";
