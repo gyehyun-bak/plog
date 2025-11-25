@@ -42,8 +42,8 @@ public class BulkUserInsert {
             "INSERT IGNORE INTO user (username, email, oauth_provider, oauth_id, created_at, last_modified_at, created_by, last_modified_by) VALUES (?, ?, ?, ?, now(), now(), 'system', 'system')";
 
     public static void main(String[] args) throws SQLException {
-        final int TARGET = 10; // 건수
-        final int BATCH_SIZE = 1000;
+        final int TARGET = 10_000_000; // 건수
+        final int BATCH_SIZE = 2000;
 
         try (Connection conn =  DriverManager.getConnection(url, dbUsername, dbPassword)) {
             conn.setAutoCommit(false);
