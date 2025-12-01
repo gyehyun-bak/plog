@@ -2,11 +2,13 @@ package com.example.server.domain.comment.service;
 
 import com.example.server.domain.comment.dto.response.CommentResponse;
 import com.example.server.domain.comment.entity.Comment;
+import com.example.server.domain.comment.exception.CommentNotFoundException;
 import com.example.server.domain.comment.repository.CommentRepository;
 import com.example.server.domain.post.entity.Post;
 import com.example.server.domain.post.repository.PostRepository;
 import com.example.server.domain.user.entity.User;
 import com.example.server.domain.user.repository.UserRepository;
+import com.example.server.global.error.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -54,5 +57,15 @@ class CommentServiceTest {
         assertThat(response.content()).isEqualTo(content);
         assertThat(response.updatedAt()).isNotNull();
         assertThat(response.createdAt()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("commentId에 해당하는 Comment가 없을 경우 CommentNotFoundException을 던진다.")
+    void throwsCommentNotFoundExceptionWhenCommentWithCommentIdDoesNotExist() {
+        // given when then
+        assertThatThrownBy(() -> commentService.getById(1))
+                .isInstanceOf(CommentNotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.COMMENT_NOT_FOUND);
     }
 }
