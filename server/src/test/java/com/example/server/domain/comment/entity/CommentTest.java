@@ -27,4 +27,23 @@ class CommentTest {
         assertThat(comment.getUser()).isEqualTo(user);
         assertThat(comment.getPost()).isEqualTo(post);
     }
+
+    @Test
+    @DisplayName("댓글 수정")
+    void updateComment() {
+        // given
+        int userId = 1;
+        int postId = 2;
+        User user = User.withId(userId);
+        Post post = Post.withId(postId);
+        String content = "content";
+        Comment comment = Comment.create(user, post, content);
+
+        // when
+        String newContent = "newContent";
+        comment.updateContent(newContent);
+
+        // then
+        assertThat(comment.getContent()).isEqualTo(newContent);
+    }
 }
