@@ -15,7 +15,7 @@ public record PostResponse(
 ) {
     public static PostResponse fromEntity(Post post) {
         return new PostResponse(
-                post.getPostId(),
+                post.getId(),
                 UserResponse.fromEntity(post.getAuthor()),
                 post.getTitle(),
                 post.getContent(),
