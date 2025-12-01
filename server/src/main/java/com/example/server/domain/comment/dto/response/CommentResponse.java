@@ -6,6 +6,7 @@ import com.example.server.domain.user.dto.response.UserResponse;
 import java.time.LocalDateTime;
 
 public record CommentResponse(
+        int id,
         UserResponse user,
         int postId,
         String content,
@@ -14,6 +15,7 @@ public record CommentResponse(
 ) {
     public static CommentResponse fromEntity(Comment comment) {
         return new CommentResponse(
+                comment.getId(),
                 UserResponse.fromEntity(comment.getUser()),
                 comment.getPost().getId(),
                 comment.getContent(),
