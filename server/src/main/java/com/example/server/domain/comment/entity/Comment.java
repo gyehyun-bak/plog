@@ -6,6 +6,8 @@ import com.example.server.global.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
@@ -17,6 +19,7 @@ public class Comment extends BaseEntity {
     @Column(name = "comment_id")
     private Integer id;
     private String content;
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -31,10 +34,12 @@ public class Comment extends BaseEntity {
                 .user(user)
                 .post(post)
                 .content(content)
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 
     public void updateContent(String newContent) {
         this.content = newContent;
+        this.updatedAt = LocalDateTime.now();
     }
 }

@@ -16,8 +16,9 @@ public enum ErrorCode {
 
     // NOT FOUND
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다. URL을 확인하세요."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 유저가 없습니다."),
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 게시물이 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 유저가 없습니다."),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 게시물이 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 댓글이 없습니다."),
 
     // METHOD NOT ALLOWED
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 HTTP 메서드입니다."),
