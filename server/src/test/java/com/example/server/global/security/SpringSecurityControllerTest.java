@@ -1,5 +1,6 @@
 package com.example.server.global.security;
 
+import com.example.server.AbstractIntegrationTest;
 import com.example.server.domain.user.entity.User;
 import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.global.security.jwt.JwtUtil;
@@ -20,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class SpringSecurityControllerTest {
+class SpringSecurityControllerTest extends AbstractIntegrationTest {
 
     @Autowired
     private MockMvcTester mockMvc;

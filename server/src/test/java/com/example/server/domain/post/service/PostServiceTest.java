@@ -1,5 +1,6 @@
 package com.example.server.domain.post.service;
 
+import com.example.server.AbstractIntegrationTest;
 import com.example.server.domain.post.dto.request.PostRequest;
 import com.example.server.domain.post.dto.response.PostResponse;
 import com.example.server.domain.post.entity.Post;
@@ -22,7 +23,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-class PostServiceTest {
+class PostServiceTest extends AbstractIntegrationTest {
 
     @Autowired
     UserRepository userRepository;
