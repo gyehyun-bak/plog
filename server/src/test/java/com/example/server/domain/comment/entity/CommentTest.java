@@ -5,7 +5,7 @@ import com.example.server.domain.user.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CommentTest {
 
@@ -16,11 +16,15 @@ class CommentTest {
         int userId = 1;
         int postId = 2;
         User user = User.withId(userId);
-        Post
+        Post post = Post.withId(postId);
+        String content = "content";
 
         // when
+        Comment comment = Comment.create(user, post, content);
 
         // then
-        Comment comment = new Comment();
+        assertThat(comment).isNotNull();
+        assertThat(comment.getUser()).isEqualTo(user);
+        assertThat(comment.getPost()).isEqualTo(post);
     }
 }
