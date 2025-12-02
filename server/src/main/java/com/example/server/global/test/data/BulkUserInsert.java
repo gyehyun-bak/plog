@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 public class BulkUserInsert {
 
@@ -12,79 +11,70 @@ public class BulkUserInsert {
     private static String dbUsername = "root";
     private static String dbPassword = "password";
 
-    private static final List<String> FIRST_NAMES = List.of(
-            "alex", "john", "emma", "mina", "kai", "olivia", "ethan", "noah", "liam", "sophia",
-            "mason", "isabella", "jacob", "mia", "william", "ava", "james", "charlotte", "benjamin", "amelia",
-            "logan", "harper", "elijah", "evelyn", "lucas", "abigail", "oliver", "emily", "henry", "ella",
-            "sebastian", "scarlett", "jack", "grace", "samuel", "chloe", "daniel", "victoria", "matthew", "lily",
-            "aiden", "hannah", "jayden", "layla", "gabriel", "zoe", "ryan", "nora", "caleb", "riley",
-            "isaac", "aria", "david", "camila", "nicholas", "penelope", "andrew", "lillian", "hunter", "bella",
-            "owen", "aubrey", "christopher", "hannah", "jeremiah", "addison", "cameron", "ella", "julian", "stella",
-            "eli", "natalie", "joseph", "zoey", "leonardo", "hazel", "joshua", "brooklyn", "jackson", "scarlett",
-            "ryder", "victoria", "grayson", "madison", "hunter", "skylar", "julian", "paisley", "adam", "aria",
-            "carter", "ellie", "nathan", "audrey", "christian", "samantha", "jonathan", "claire", "dominic", "piper"
-    );
-
-    private static final List<String> LAST_NAMES = List.of(
-            "kim", "lee", "park", "choi", "cho", "kang", "yun", "han", "jung", "jang",
-            "smith", "johnson", "williams", "brown", "jones", "miller", "davis", "garcia", "rodriguez", "wilson",
-            "martinez", "anderson", "taylor", "thomas", "hernandez", "moore", "martin", "jackson", "thompson", "white",
-            "lopez", "leeuw", "clark", "walker", "hall", "allen", "young", "king", "wright", "hill",
-            "scott", "green", "adams", "baker", "gonzalez", "nelson", "carter", "mitchell", "perez", "roberts",
-            "turner", "phillips", "campbell", "parker", "evans", "edwards", "collins", "stewart", "sanchez", "morris",
-            "rogers", "reed", "cook", "morgan", "bell", "murphy", "bailey", "rivera", "cooper", "richardson",
-            "cox", "howard", "ward", "torres", "peterson", "gray", "ramirez", "james", "watson", "brooks",
-            "kelly", "sanders", "price", "bennett", "wood", "barnes", "ross", "henderson", "coleman", "jenkins",
-            "perry", "powell", "long", "patterson", "hughes", "flores", "washington", "butler", "simmons", "foster"
-    );
-
     private static final String INSERT_SQL =
-            "INSERT IGNORE INTO user (username, email, oauth_provider, oauth_id, created_at, last_modified_at, created_by, last_modified_by) VALUES (?, ?, ?, ?, now(), now(), 'system', 'system')";
+            "INSERT INTO user (username, email, oauth_provider, oauth_id, created_at, last_modified_at, created_by, last_modified_by) " +
+                    "VALUES (?, ?, ?, ?, now(), now(), 'system', 'system')";
+
+    // a~z, 0~9, _
+    private static final char[] CHARSET;
+
+    static {
+        StringBuilder sb = new StringBuilder();
+        for (char c = '0'; c <= '9'; c++) sb.append(c);
+        for (char c = 'a'; c <= 'z'; c++) sb.append(c);
+        sb.append('_');
+        CHARSET = sb.toString().toCharArray();
+    }
+
+    // 문자열 N진법 증가 함수
+    private static boolean nextString(StringBuilder s) {
+        int base = CHARSET.length;  // 37
+        int i = s.length() - 1;
+
+        while (i >= 0) {
+            int pos = indexOf(CHARSET, s.charAt(i));
+            if (pos < base - 1) {
+                s.setCharAt(i, CHARSET[pos + 1]); // 자리 증가
+                return true;
+            } else {
+                s.setCharAt(i, CHARSET[0]); // 자리 올림
+                i--;
+            }
+        }
+
+        // 모두 오버플로우 → 길이 증가
+        if (s.length() < 15) {
+            s.append(CHARSET[0]);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static int indexOf(char[] arr, char c) {
+        for (int i = 0; i < arr.length; i++)
+            if (arr[i] == c) return i;
+        return -1;
+    }
 
     public static void main(String[] args) throws SQLException {
-        final int TARGET = 10; // 건수
+
+        final long TARGET = 10_000_000L;   // 생성할 개수
         final int BATCH_SIZE = 1000;
 
-        try (Connection conn =  DriverManager.getConnection(url, dbUsername, dbPassword)) {
+        try (Connection conn = DriverManager.getConnection(url, dbUsername, dbPassword)) {
             conn.setAutoCommit(false);
 
             try (PreparedStatement ps = conn.prepareStatement(INSERT_SQL)) {
 
                 long start = System.currentTimeMillis();
 
-                int firstSize = FIRST_NAMES.size();
-                int lastSize = LAST_NAMES.size();
+                StringBuilder current = new StringBuilder("0"); // 시작값
 
-                for (int i = 0; i < TARGET; i++) {
+                for (long i = 0; i < TARGET; i++) {
 
-                    // 순차적으로 first, last 선택
-                    String first = FIRST_NAMES.get(i % firstSize);
-                    String last = LAST_NAMES.get((i / firstSize) % lastSize);
-
-                    // username base 만들기
-                    String base = first + last;
-
-                    // 숫자 공간 확보
-                    int number = (i % 999) + 1; // 001~999
-                    String numberStr = String.format("%03d", number);
-
-                    // _ 위치 계산: 1 ~ (base.length - 1) 순환
-                    int underscorePos = (i % (base.length() - 1)) + 1;
-
-                    // username 만들기
-                    String username = base.substring(0, underscorePos) + "_" + base.substring(underscorePos);
-                    // 숫자 추가, 15자 초과 시 base 자르기
-                    if (username.length() + 3 > 15) {
-                        int allowedBaseLength = 15 - 3 - 1; // 3자리 숫자 + underscore
-                        if (allowedBaseLength < underscorePos) {
-                            underscorePos = allowedBaseLength; // 위치 조정
-                        }
-                        username = base.substring(0, underscorePos) + "_" + base.substring(underscorePos, allowedBaseLength);
-                    }
-                    username = username + numberStr;
-
-                    // email unique
-                    String email = username + "_" + i + "@example.com";
+                    String username = current.toString();
+                    String email = username + "@example.com";
 
                     ps.setString(1, username);
                     ps.setString(2, email);
@@ -97,14 +87,20 @@ public class BulkUserInsert {
                         conn.commit();
                         System.out.println("Inserted: " + i);
                     }
+
+                    boolean ok = nextString(current);
+                    if (!ok) {
+                        throw new RuntimeException("No more strings available (limit reached)");
+                    }
                 }
 
                 ps.executeBatch();
                 conn.commit();
 
                 long end = System.currentTimeMillis();
-                System.out.println("Completed insert. Time = " + (end - start) / 1000 + "s");
+                System.out.println("Completed. Time = " + (end - start) / 1000 + "s");
             }
         }
     }
 }
+

@@ -1,5 +1,6 @@
 package com.example.server.domain.user.service;
 
+import com.example.server.AbstractIntegrationTest;
 import com.example.server.domain.user.dto.response.UserResponse;
 import com.example.server.domain.user.entity.User;
 import com.example.server.domain.user.exception.UserNotFoundException;
@@ -19,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-class UserServiceTest {
+class UserServiceTest extends AbstractIntegrationTest {
 
     @Autowired
     private UserService userService;

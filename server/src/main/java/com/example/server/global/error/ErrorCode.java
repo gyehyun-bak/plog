@@ -16,8 +16,9 @@ public enum ErrorCode {
 
     // NOT FOUND
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다. URL을 확인하세요."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 유저가 없습니다."),
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 게시물이 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 유저가 없습니다."),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 게시물이 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 ID의 댓글이 없습니다."),
 
     // METHOD NOT ALLOWED
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 HTTP 메서드입니다."),
@@ -32,6 +33,8 @@ public enum ErrorCode {
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
     USER_NOT_ALLOWED_UPDATE_POST(HttpStatus.FORBIDDEN, "해당 게시물을 수정할 권한이 없습니다."),
     USER_NOT_ALLOWED_DELETE_POST(HttpStatus.FORBIDDEN, "해당 게시물을 삭제할 권한이 없습니다."),
+    USER_NOT_ALLOWED_UPDATE_COMMENT(HttpStatus.FORBIDDEN, "해당 댓글을 수정할 권한이 없습니다."),
+    USER_NOT_ALLOWED_DELETE_COMMENT(HttpStatus.FORBIDDEN, "해당 댓글을 삭제할 권한이 없습니다."),
 
     // INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");

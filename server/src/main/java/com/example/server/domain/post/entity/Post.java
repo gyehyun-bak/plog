@@ -16,7 +16,7 @@ public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
-    private Integer postId;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -33,6 +33,17 @@ public class Post extends BaseEntity {
                 .title(title)
                 .content(content)
                 .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 테스트용 Post 객체를 생성합니다. 해당 메서드를 실제 비즈니스 코드에서 사용해서는 안 됩니다.
+     * @param postId 테스트용 postId
+     * @return postId를 id로 갖는 빈 Post
+     */
+    public static Post withId(Integer postId) {
+        return Post.builder()
+                .id(postId)
                 .build();
     }
 

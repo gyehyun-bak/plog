@@ -1,5 +1,6 @@
 package com.example.server.global.security;
 
+import com.example.server.AbstractIntegrationTest;
 import com.example.server.domain.user.entity.User;
 import com.example.server.domain.user.repository.UserRepository;
 import com.example.server.global.security.jwt.JwtUtil;
@@ -13,12 +14,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@Transactional
 @AutoConfigureMockMvc
-class SpringSecurityControllerTest {
+class SpringSecurityControllerTest extends AbstractIntegrationTest {
 
     @Autowired
     private MockMvcTester mockMvc;

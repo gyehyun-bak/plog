@@ -1,5 +1,6 @@
 package com.example.server.domain.post.service;
 
+import com.example.server.AbstractIntegrationTest;
 import com.example.server.domain.post.dto.request.PostRequest;
 import com.example.server.domain.post.dto.response.PostResponse;
 import com.example.server.domain.post.entity.Post;
@@ -22,7 +23,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-class PostServiceTest {
+class PostServiceTest extends AbstractIntegrationTest {
 
     @Autowired
     UserRepository userRepository;
@@ -43,10 +44,10 @@ class PostServiceTest {
         postRepository.save(post);
 
         // when
-        PostResponse found = postService.getById(post.getPostId());
+        PostResponse found = postService.getById(post.getId());
 
         // then
-        assertThat(found.postId()).isEqualTo(post.getPostId());
+        assertThat(found.postId()).isEqualTo(post.getId());
         assertThat(found.author().userId()).isEqualTo(author.getId());
         assertThat(found.author().username()).isEqualTo(author.getUsername());
         assertThat(found.title()).isEqualTo(post.getTitle());
@@ -119,10 +120,10 @@ class PostServiceTest {
         PostRequest request = new PostRequest(newTitle, newContent);
 
         // when
-        PostResponse updated = postService.updatePost(author.getId(), post.getPostId(), request);
+        PostResponse updated = postService.updatePost(author.getId(), post.getId(), request);
 
         // then
-        assertThat(updated.postId()).isEqualTo(post.getPostId());
+        assertThat(updated.postId()).isEqualTo(post.getId());
         assertThat(updated.author().userId()).isEqualTo(author.getId());
         assertThat(updated.title()).isEqualTo(newTitle);
         assertThat(updated.content()).isEqualTo(newContent);
@@ -142,7 +143,7 @@ class PostServiceTest {
         int invalidUserId = author.getId() + 9999;
 
         // when then
-        assertThatThrownBy(() -> postService.updatePost(invalidUserId, post.getPostId(), request))
+        assertThatThrownBy(() -> postService.updatePost(invalidUserId, post.getId(), request))
                 .isInstanceOf(UserNotFoundException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.USER_NOT_FOUND);
@@ -166,7 +167,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("권한이 없는 user가 Post를 수정할 경우 UserNotAllowedUpdatePostException이 발생한다.")
+    @DisplayName("작성자가 아닌 User가 Post를 수정할 경우 UserNotAllowedUpdatePostException이 발생한다.")
     void throwUserNotAllowedUpdatePostExceptionWhenUnauthorizedUserTriesToUpdatePost() {
         // given
         User author = User.create("author", "author@email.com", "Author", "author-id");
@@ -180,7 +181,7 @@ class PostServiceTest {
         PostRequest updateRequest = new PostRequest("new title", "new content");
 
         // when then
-        assertThatThrownBy(() -> postService.updatePost(otherUser.getId(), post.getPostId(), updateRequest))
+        assertThatThrownBy(() -> postService.updatePost(otherUser.getId(), post.getId(), updateRequest))
                 .isInstanceOf(UserNotAllowedUpdatePostException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.USER_NOT_ALLOWED_UPDATE_POST);
@@ -196,10 +197,10 @@ class PostServiceTest {
         postRepository.save(post);
 
         // when
-        postService.deletePost(author.getId(), post.getPostId());
+        postService.deletePost(author.getId(), post.getId());
 
         // then
-        assertThat(postRepository.findById(post.getPostId())).isEmpty();
+        assertThat(postRepository.findById(post.getId())).isEmpty();
     }
 
     @Test
@@ -212,7 +213,7 @@ class PostServiceTest {
         int invalidUserId = 9999;
 
         // when then
-        assertThatThrownBy(() -> postService.deletePost(invalidUserId, post.getPostId()))
+        assertThatThrownBy(() -> postService.deletePost(invalidUserId, post.getId()))
                 .isInstanceOf(UserNotFoundException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.USER_NOT_FOUND);
@@ -247,7 +248,7 @@ class PostServiceTest {
         userRepository.save(otherUser);
 
         // when then
-        assertThatThrownBy(() -> postService.deletePost(otherUser.getId(), post.getPostId()))
+        assertThatThrownBy(() -> postService.deletePost(otherUser.getId(), post.getId()))
                 .isInstanceOf(UserNotAllowedDeletePostException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.USER_NOT_ALLOWED_DELETE_POST);
