@@ -4,6 +4,7 @@ import com.example.server.domain.comment.dto.request.CommentRequest;
 import com.example.server.domain.comment.dto.response.CommentResponse;
 import com.example.server.domain.comment.entity.Comment;
 import com.example.server.domain.comment.exception.CommentNotFoundException;
+import com.example.server.domain.comment.exception.UserNotAllowedDeleteCommentException;
 import com.example.server.domain.comment.exception.UserNotAllowedUpdateCommentException;
 import com.example.server.domain.comment.repository.CommentRepository;
 import com.example.server.domain.post.entity.Post;
@@ -58,14 +59,30 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentResponse updateComment(int userId, int commentId, CommentRequest request) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        if (!comment.getUser().equals(user)) {
+        // 권한 체크: 댓글 작성자도 아닌 경우 예외 던짐
+        boolean isCommentAuthor = comment.getUser().getId() == userId;
+        if (!isCommentAuthor) {
             throw new UserNotAllowedUpdateCommentException();
         }
 
         comment.updateContent(request.content());
 
         return CommentResponse.fromEntity(comment);
+    }
+
+    @Override
+    public void deleteComment(int userId, int commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
+
+        // 권한 체크: 댓글 작성자도 아니고, 게시글 작성자도 아닌 경우 예외 던짐
+        boolean isCommentAuthor = comment.getUser().getId() == userId;
+        boolean isPostAuthor = comment.getPost().getAuthor().getId() == userId;
+
+        if (!isCommentAuthor && !isPostAuthor) {
+            throw new UserNotAllowedDeleteCommentException();
+        }
+
+        commentRepository.deleteById(commentId);
     }
 }

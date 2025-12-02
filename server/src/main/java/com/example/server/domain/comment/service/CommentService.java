@@ -4,6 +4,7 @@ import com.example.server.domain.comment.dto.request.CommentRequest;
 import com.example.server.domain.comment.dto.response.CommentResponse;
 import com.example.server.domain.comment.exception.CommentNotFoundException;
 import com.example.server.domain.post.exception.PostNotFoundException;
+import com.example.server.domain.post.exception.UserNotAllowedDeletePostException;
 import com.example.server.domain.post.exception.UserNotAllowedUpdatePostException;
 import com.example.server.domain.user.exception.UserNotFoundException;
 import org.springframework.data.domain.Pageable;
@@ -44,8 +45,20 @@ public interface CommentService {
      * @param commentId 수정할 Comment의 고유 식별자
      * @param request 수정할 Comment 정보를 담은 {@link CommentRequest} 객체
      * @return 수정된 Comment 정보를 담은 {@link CommentResponse} 객체
-     * @throws UserNotFoundException userId에 대항하는 User가 존재하지 않을 경우 발생
+     * @throws CommentNotFoundException commentId에 해당하는 Comment가 존재하지 않을 경우 발생
      * @throws UserNotAllowedUpdatePostException 권한이 없는 User가 Comment를 업데이트할 경우 발생
      */
     CommentResponse updateComment(int userId, int commentId, CommentRequest request);
+
+    /**
+     * 기존 Comment를 삭제합니다.
+     *
+     * <p> 삭제는 Comment 작성자와 Post 작성자에게 허용됩니다.
+     *
+     * @param userId 삭제를 요청하는 User의 고유 식별자
+     * @param commentId 삭제할 Comment의 고유 식별자
+     * @throws CommentNotFoundException commentId에 해당하는 Comment가 존재하지 않을 경우 발생
+     * @throws UserNotAllowedDeletePostException 권한이 없는 User가 Comment를 삭제하려고 할 경우 발생
+     */
+    void deleteComment(int userId, int commentId);
 }

@@ -5,6 +5,7 @@ import com.example.server.domain.comment.dto.request.CommentRequest;
 import com.example.server.domain.comment.dto.response.CommentResponse;
 import com.example.server.domain.comment.entity.Comment;
 import com.example.server.domain.comment.exception.CommentNotFoundException;
+import com.example.server.domain.comment.exception.UserNotAllowedDeleteCommentException;
 import com.example.server.domain.comment.exception.UserNotAllowedUpdateCommentException;
 import com.example.server.domain.comment.repository.CommentRepository;
 import com.example.server.domain.post.entity.Post;
@@ -219,25 +220,104 @@ class CommentServiceTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 User의 userId로 댓글 수정을 요청하면 UserNotFoundException을 던진다.")
-    void throwsUserNotFoundExceptionWhenUserIdDoesNotExist() {
+    @DisplayName("존재하지 않는 commentId로 댓글 수정을 요청하면 CommentNotFoundException을 던진다.")
+    void throwsCommentNotFoundExceptionWhenCommentIdDoesNotExistOnUpdateComment() {
         // given
         User user = User.create("testUser", "test@email.com", "TEST", "test-id");
-        Post post = Post.create(user, "testPost", "test-content");
         userRepository.save(user);
+
+        // when then
+        assertThatThrownBy(() -> commentService.updateComment(user.getId(), -1, new CommentRequest("newContent")))
+                .isInstanceOf(CommentNotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.COMMENT_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("Comment 작성자는 Comment를 삭제할 수 있다.")
+    void commentWriterCanDeleteComment() {
+        // given
+        User author = User.create("testUser", "test@email.com", "TEST", "test-id");
+        userRepository.save(author);
+
+        Post post = Post.create(author, "testPost", "test-content");
         postRepository.save(post);
 
+        User commentUser = User.create("commentUser", "commentUser@email.com", "TEST", "test-id");
+        userRepository.save(commentUser);
+
         String content = "content";
-        Comment comment = Comment.create(user, post, content);
+        Comment comment = Comment.create(commentUser, post, content);
+        commentRepository.save(comment);
+
+        // when
+        commentService.deleteComment(commentUser.getId(), comment.getId());
+
+        // then
+        assertThat(commentRepository.findById(comment.getId())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Post 작성자는 댓글을 삭제할 수 있다.")
+    void postAuthorCanDeleteComment() {
+        // given
+        User author = User.create("testUser", "test@email.com", "TEST", "test-id");
+        userRepository.save(author);
+
+        Post post = Post.create(author, "testPost", "test-content");
+        postRepository.save(post);
+
+        User commentUser = User.create("commentUser", "commentUser@email.com", "TEST", "test-id");
+        userRepository.save(commentUser);
+
+        String content = "content";
+        Comment comment = Comment.create(commentUser, post, content);
+        commentRepository.save(comment);
+
+        // when
+        commentService.deleteComment(author.getId(), comment.getId());
+
+        // then
+        assertThat(commentRepository.findById(comment.getId())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("권한이 없는 User가 댓글 삭제를 요청할 경우 UserNotAllowedDeleteCommentException을 던진다.")
+    void throwsUserNotAllowedDeleteCommentExceptionWhenUserNotAllowed() {
+        // given
+        User author = User.create("testUser", "test@email.com", "TEST", "test-id");
+        userRepository.save(author);
+
+        Post post = Post.create(author, "testPost", "test-content");
+        postRepository.save(post);
+
+        User commentUser = User.create("commentUser", "commentUser@email.com", "TEST", "test-id");
+        userRepository.save(commentUser);
+
+        String content = "content";
+        Comment comment = Comment.create(commentUser, post, content);
         commentRepository.save(comment);
 
         // when then
-        int invalidUserId = 999;
-
-        CommentRequest request = new CommentRequest("newContent");
-        assertThatThrownBy(() -> commentService.updateComment(invalidUserId, comment.getId(), request))
-                .isInstanceOf(UserNotFoundException.class)
+        User otherUser = User.create("otherUser", "otherUser@email.com", "TEST", "test-id");
+        userRepository.save(otherUser);
+        assertThatThrownBy(() -> commentService.deleteComment(otherUser.getId(), comment.getId()))
+                .isInstanceOf(UserNotAllowedDeleteCommentException.class)
                 .extracting("errorCode")
-                .isEqualTo(ErrorCode.USER_NOT_FOUND);
+                .isEqualTo(ErrorCode.USER_NOT_ALLOWED_DELETE_COMMENT);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 commentId로 Comment 삭제를 요청할 경우 CommentNotFoundException을 던진다.")
+    void throwsCommentNotFoundExceptionWhenCommentIdDoesNotExistOnDeleteComment() {
+        // given
+        User user = User.create("testUser", "test@email.com", "TEST", "test-id");
+        userRepository.save(user);
+
+        // when then
+        assertThatThrownBy(() -> commentService.deleteComment(user.getId(), -1))
+                .isInstanceOf(CommentNotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.COMMENT_NOT_FOUND);
     }
 }
