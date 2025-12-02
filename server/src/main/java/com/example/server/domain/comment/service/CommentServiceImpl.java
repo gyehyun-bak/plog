@@ -1,8 +1,10 @@
 package com.example.server.domain.comment.service;
 
+import com.example.server.domain.comment.dto.request.CommentRequest;
 import com.example.server.domain.comment.dto.response.CommentResponse;
 import com.example.server.domain.comment.entity.Comment;
 import com.example.server.domain.comment.exception.CommentNotFoundException;
+import com.example.server.domain.comment.exception.UserNotAllowedUpdateCommentException;
 import com.example.server.domain.comment.repository.CommentRepository;
 import com.example.server.domain.post.entity.Post;
 import com.example.server.domain.post.exception.PostNotFoundException;
@@ -26,14 +28,14 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
 
     @Override
-    public CommentResponse createComment(int postId, int userId, String content) {
+    public CommentResponse createComment(int postId, int userId, CommentRequest request) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(PostNotFoundException::new);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
-        Comment comment = Comment.create(user, post, content);
+        Comment comment = Comment.create(user, post, request.content());
         commentRepository.save(comment);
 
         return CommentResponse.fromEntity(comment);
@@ -51,5 +53,19 @@ public class CommentServiceImpl implements CommentService {
     public Slice<CommentResponse> getByPostId(int postId, Pageable pageable) {
         Slice<Comment> commentSlice = commentRepository.findByPostId(postId, pageable);
         return commentSlice.map(CommentResponse::fromEntity);
+    }
+
+    @Override
+    public CommentResponse updateComment(int userId, int commentId, CommentRequest request) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        if (!comment.getUser().equals(user)) {
+            throw new UserNotAllowedUpdateCommentException();
+        }
+
+        comment.updateContent(request.content());
+
+        return CommentResponse.fromEntity(comment);
     }
 }

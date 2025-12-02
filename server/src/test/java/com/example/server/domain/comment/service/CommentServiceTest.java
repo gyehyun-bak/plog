@@ -1,6 +1,7 @@
 package com.example.server.domain.comment.service;
 
 import com.example.server.AbstractIntegrationTest;
+import com.example.server.domain.comment.dto.request.CommentRequest;
 import com.example.server.domain.comment.dto.response.CommentResponse;
 import com.example.server.domain.comment.entity.Comment;
 import com.example.server.domain.comment.exception.CommentNotFoundException;
@@ -50,9 +51,10 @@ class CommentServiceTest extends AbstractIntegrationTest {
         postRepository.save(post);
 
         String content = "content";
+        CommentRequest request = new CommentRequest(content);
 
         // when
-        CommentResponse response = commentService.createComment(post.getId(), user.getId(), content);
+        CommentResponse response = commentService.createComment(post.getId(), user.getId(), request);
 
         // then
         assertThat(response).isNotNull();
@@ -66,6 +68,44 @@ class CommentServiceTest extends AbstractIntegrationTest {
         Comment savedComment = commentRepository.findById(response.id())
                 .orElseThrow(() -> new AssertionError("댓글이 저장되지 않음"));
         assertThat(savedComment.getContent()).isEqualTo(content);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 postId로 댓글 작성 시 PostNotFoundException을 던진다.")
+    void throwsPostNotFoundExceptionWhenPostDoesNotExist() {
+        // given
+        User user = User.create("testUser", "test@email.com", "TEST", "test-id");
+        userRepository.save(user);
+
+        int invalidPostId = 999;
+        String content = "content";
+        CommentRequest request = new CommentRequest(content);
+
+        // when then
+        assertThatThrownBy(() -> commentService.createComment(invalidPostId, user.getId(), request))
+                .isInstanceOf(PostNotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.POST_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 userId로 댓글 작성 시 UserNotFoundException을 던진다.")
+    void throwsUserNotFoundExceptionWhenUserDoesNotExist() {
+        // given
+        User user = User.create("testUser", "test@email.com", "TEST", "test-id");
+        Post post = Post.create(user, "testPost", "test-content");
+        userRepository.save(user);
+        postRepository.save(post);
+
+        int invalidUserId = 999;
+        String content = "content";
+        CommentRequest request = new CommentRequest(content);
+
+        // when then
+        assertThatThrownBy(() -> commentService.createComment(post.getId(), invalidUserId, request))
+                .isInstanceOf(UserNotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.USER_NOT_FOUND);
     }
 
     @Test
@@ -91,42 +131,6 @@ class CommentServiceTest extends AbstractIntegrationTest {
         assertThat(response.content()).isEqualTo(content);
         assertThat(response.updatedAt()).isNotNull();
         assertThat(response.createdAt()).isNotNull();
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 postId로 댓글 작성 시 PostNotFoundException을 던진다.")
-    void throwsPostNotFoundExceptionWhenPostDoesNotExist() {
-        // given
-        User user = User.create("testUser", "test@email.com", "TEST", "test-id");
-        userRepository.save(user);
-
-        int invalidPostId = 999;
-        String content = "content";
-
-        // when then
-        assertThatThrownBy(() -> commentService.createComment(invalidPostId, user.getId(), content))
-                .isInstanceOf(PostNotFoundException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.POST_NOT_FOUND);
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 userId로 댓글 작성 시 UserNotFoundException을 던진다.")
-    void throwsUserNotFoundExceptionWhenUserDoesNotExist() {
-        // given
-        User user = User.create("testUser", "test@email.com", "TEST", "test-id");
-        Post post = Post.create(user, "testPost", "test-content");
-        userRepository.save(user);
-        postRepository.save(post);
-
-        int invalidUserId = 999;
-        String content = "content";
-
-        // when then
-        assertThatThrownBy(() -> commentService.createComment(post.getId(), invalidUserId, content))
-                .isInstanceOf(UserNotFoundException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.USER_NOT_FOUND);
     }
 
     @Test
@@ -165,5 +169,26 @@ class CommentServiceTest extends AbstractIntegrationTest {
         assertThat(slice.getContent()).hasSize(pageSize); // 페이지 크기만큼 조회
         assertThat(slice.getContent().getFirst().postId()).isEqualTo(post.getId());
         assertThat(slice.hasNext()).isTrue(); // 전체 5개 중 3개 조회, 다음 페이지 있음
+    }
+
+    @Test
+    @DisplayName("댓글을 작성한 User는 댓글을 수정할 수 있다.")
+    void canUpdateComment() {
+        // given
+        User user = User.create("testUser", "test@email.com", "TEST", "test-id");
+        Post post = Post.create(user, "testPost", "test-content");
+        userRepository.save(user);
+        postRepository.save(post);
+
+        String content = "content";
+        Comment comment = Comment.create(user, post, content);
+        commentRepository.save(comment);
+
+        // when
+        String newContent = "newContent";
+        CommentResponse response = commentService.updateComment(user.getId(), comment.getId(), new CommentRequest(newContent));
+
+        // then
+        assertThat(response.content()).isEqualTo(newContent);
     }
 }
