@@ -167,7 +167,7 @@ class PostServiceTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("권한이 없는 user가 Post를 수정할 경우 UserNotAllowedUpdatePostException이 발생한다.")
+    @DisplayName("작성자가 아닌 User가 Post를 수정할 경우 UserNotAllowedUpdatePostException이 발생한다.")
     void throwUserNotAllowedUpdatePostExceptionWhenUnauthorizedUserTriesToUpdatePost() {
         // given
         User author = User.create("author", "author@email.com", "Author", "author-id");

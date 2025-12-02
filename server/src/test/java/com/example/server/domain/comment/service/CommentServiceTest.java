@@ -5,6 +5,7 @@ import com.example.server.domain.comment.dto.request.CommentRequest;
 import com.example.server.domain.comment.dto.response.CommentResponse;
 import com.example.server.domain.comment.entity.Comment;
 import com.example.server.domain.comment.exception.CommentNotFoundException;
+import com.example.server.domain.comment.exception.UserNotAllowedUpdateCommentException;
 import com.example.server.domain.comment.repository.CommentRepository;
 import com.example.server.domain.post.entity.Post;
 import com.example.server.domain.post.exception.PostNotFoundException;
@@ -186,9 +187,57 @@ class CommentServiceTest extends AbstractIntegrationTest {
 
         // when
         String newContent = "newContent";
-        CommentResponse response = commentService.updateComment(user.getId(), comment.getId(), new CommentRequest(newContent));
+        CommentRequest request = new CommentRequest(newContent);
+        CommentResponse response = commentService.updateComment(user.getId(), comment.getId(), request);
 
         // then
         assertThat(response.content()).isEqualTo(newContent);
+    }
+
+    @Test
+    @DisplayName("댓글의 작성자 아닌 User가 댓글 수정을 요청하면 UserNotAllowedUpdateCommentException을 던진다.")
+    void throwsUserNotAllowedUpdateCommentExceptionWhenUserDidntWriteComment() {
+        // given
+        User user = User.create("testUser", "test@email.com", "TEST", "test-id");
+        Post post = Post.create(user, "testPost", "test-content");
+        userRepository.save(user);
+        postRepository.save(post);
+
+        String content = "content";
+        Comment comment = Comment.create(user, post, content);
+        commentRepository.save(comment);
+
+        // when then
+        User otherUser = User.create("otherUser", "otherUser@email.com", "TEST", "test-id");
+        userRepository.save(otherUser);
+
+        CommentRequest request = new CommentRequest("newContent");
+        assertThatThrownBy(() -> commentService.updateComment(otherUser.getId(), comment.getId(), request))
+                .isInstanceOf(UserNotAllowedUpdateCommentException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.USER_NOT_ALLOWED_UPDATE_COMMENT);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 User의 userId로 댓글 수정을 요청하면 UserNotFoundException을 던진다.")
+    void throwsUserNotFoundExceptionWhenUserIdDoesNotExist() {
+        // given
+        User user = User.create("testUser", "test@email.com", "TEST", "test-id");
+        Post post = Post.create(user, "testPost", "test-content");
+        userRepository.save(user);
+        postRepository.save(post);
+
+        String content = "content";
+        Comment comment = Comment.create(user, post, content);
+        commentRepository.save(comment);
+
+        // when then
+        int invalidUserId = 999;
+
+        CommentRequest request = new CommentRequest("newContent");
+        assertThatThrownBy(() -> commentService.updateComment(invalidUserId, comment.getId(), request))
+                .isInstanceOf(UserNotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.USER_NOT_FOUND);
     }
 }
