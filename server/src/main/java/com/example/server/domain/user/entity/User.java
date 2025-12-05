@@ -35,7 +35,7 @@ public class User extends BaseEntity {
                 .email(email)
                 .oauthProvider(oauthProvider)
                 .oauthId(oauthId)
-                .publicId("user_" + UUID.randomUUID().toString())
+                .publicId("user_" + UUID.randomUUID())
                 .build();
     }
 
@@ -47,7 +47,7 @@ public class User extends BaseEntity {
     public static User withId(int userId) {
         return User.builder()
                 .id(userId)
-                .publicId("user_test_" + UUID.randomUUID().toString())
+                .publicId("user_test_" + UUID.randomUUID())
                 .build();
     }
 
