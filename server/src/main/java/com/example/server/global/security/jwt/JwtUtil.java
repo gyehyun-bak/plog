@@ -26,17 +26,17 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String createAccessToken(int userId) {
-        return createToken(String.valueOf(userId), ACCESS_TOKEN_MAX_AGE);
+    public String createAccessToken(String id) {
+        return createToken(id, ACCESS_TOKEN_MAX_AGE);
     }
 
-    public String createRefreshToken(int userId) {
-        return createToken(String.valueOf(userId), REFRESH_TOKEN_MAX_AGE);
+    public String createRefreshToken(String id) {
+        return createToken(id, REFRESH_TOKEN_MAX_AGE);
     }
 
-    public String createToken(String userId, long maxAge) {
+    public String createToken(String id, long maxAge) {
         return Jwts.builder()
-                .subject(userId)
+                .subject(id)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + maxAge))
                 .signWith(key)

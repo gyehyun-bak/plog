@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            return CustomUserDetails.of(userRepository.findById(Integer.valueOf(username)).orElseThrow(() -> new UsernameNotFoundException("해당하는 ID의 유저가 존재하지 않습니다.")));
+            return CustomUserDetails.of(userRepository.findByPublicId(username).orElseThrow(() -> new UsernameNotFoundException("해당하는 ID의 유저가 존재하지 않습니다.")));
         } catch (Exception e) {
             log.debug("Username not found", e);
             throw new UsernameNotFoundException("Username not found");

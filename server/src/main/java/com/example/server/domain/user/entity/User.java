@@ -4,6 +4,8 @@ import com.example.server.global.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -14,6 +16,9 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Integer id;
+
+    @Column(nullable = false, unique = true, updatable = false)
+    private String publicId;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -30,6 +35,7 @@ public class User extends BaseEntity {
                 .email(email)
                 .oauthProvider(oauthProvider)
                 .oauthId(oauthId)
+                .publicId("user_" + UUID.randomUUID())
                 .build();
     }
 
@@ -41,6 +47,7 @@ public class User extends BaseEntity {
     public static User withId(int userId) {
         return User.builder()
                 .id(userId)
+                .publicId("user_test_" + UUID.randomUUID())
                 .build();
     }
 

@@ -65,8 +65,8 @@ public class AuthService {
     }
 
     private String getAccessToken(HttpServletResponse response, User user) {
-        String accessToken = jwtUtil.createAccessToken(user.getId());
-        String refreshToken = jwtUtil.createRefreshToken(user.getId());
+        String accessToken = jwtUtil.createAccessToken(user.getPublicId());
+        String refreshToken = jwtUtil.createRefreshToken(user.getPublicId());
         storeRefreshTokenInCookie(response, refreshToken);
         return accessToken;
     }

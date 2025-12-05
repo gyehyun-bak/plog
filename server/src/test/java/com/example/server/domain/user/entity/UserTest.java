@@ -21,6 +21,7 @@ class UserTest {
 
         // then
         assertThat(user).isNotNull();
+        assertThat(user.getPublicId()).isNotNull().startsWith("user_");
         assertThat(user.getUsername()).isEqualTo(username);
         assertThat(user.getEmail()).isEqualTo(email);
         assertThat(user.getOauthProvider()).isEqualTo(oAuthProvider);

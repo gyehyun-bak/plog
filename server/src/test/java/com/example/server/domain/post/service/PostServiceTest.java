@@ -48,7 +48,7 @@ class PostServiceTest extends AbstractIntegrationTest {
 
         // then
         assertThat(found.postId()).isEqualTo(post.getId());
-        assertThat(found.author().userId()).isEqualTo(author.getId());
+        assertThat(found.author().id()).isEqualTo(author.getPublicId());
         assertThat(found.author().username()).isEqualTo(author.getUsername());
         assertThat(found.title()).isEqualTo(post.getTitle());
         assertThat(found.content()).isEqualTo(post.getContent());
@@ -85,7 +85,7 @@ class PostServiceTest extends AbstractIntegrationTest {
 
         // then
         assertThat(saved.postId()).isNotNull();
-        assertThat(saved.author().userId()).isEqualTo(author.getId());
+        assertThat(saved.author().id()).isEqualTo(author.getPublicId());
         assertThat(saved.author().username()).isEqualTo(author.getUsername());
         assertThat(saved.title()).isEqualTo(title);
         assertThat(saved.content()).isEqualTo(content);
@@ -124,7 +124,7 @@ class PostServiceTest extends AbstractIntegrationTest {
 
         // then
         assertThat(updated.postId()).isEqualTo(post.getId());
-        assertThat(updated.author().userId()).isEqualTo(author.getId());
+        assertThat(updated.author().id()).isEqualTo(author.getPublicId());
         assertThat(updated.title()).isEqualTo(newTitle);
         assertThat(updated.content()).isEqualTo(newContent);
         assertThat(updated.updatedAt()).isNotNull();
