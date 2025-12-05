@@ -77,7 +77,7 @@ class SpringSecurityControllerTest extends AbstractIntegrationTest {
     @Test
     @DisplayName("유효한 JWT 엑세스 토큰으로 /test/authenticated에 접근 가능")
     void jwtCanBeValidated() {
-        String accessToken = jwtUtil.createAccessToken(testUser.getId());
+        String accessToken = jwtUtil.createAccessToken(testUser.getPublicId());
         assertThat(mockMvc.get()
                 .header("Authorization", "Bearer " + accessToken)
                 .uri("/test/authenticated"))
