@@ -61,7 +61,7 @@ class CommentServiceTest extends AbstractIntegrationTest {
         // then
         assertThat(response).isNotNull();
         assertThat(response.postId()).isEqualTo(post.getId());
-        assertThat(response.user().userId()).isEqualTo(user.getId());
+        assertThat(response.user().id()).isEqualTo(user.getPublicId());
         assertThat(response.content()).isEqualTo(content);
         assertThat(response.createdAt()).isNotNull();
         assertThat(response.updatedAt()).isNotNull();
@@ -128,7 +128,7 @@ class CommentServiceTest extends AbstractIntegrationTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.user().userId()).isEqualTo(user.getId());
+        assertThat(response.user().id()).isEqualTo(user.getPublicId());
         assertThat(response.postId()).isEqualTo(post.getId());
         assertThat(response.content()).isEqualTo(content);
         assertThat(response.updatedAt()).isNotNull();

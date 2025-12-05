@@ -29,17 +29,17 @@ class UserServiceTest extends AbstractIntegrationTest {
     private UserRepository userRepository;
 
     @Test
-    @DisplayName("userId로 User를 조회할 수 있다")
-    void canGetUserFromUserId() {
+    @DisplayName("publicId로 User를 조회할 수 있다")
+    void canGetUserFromPublicId() {
         // given
         User user = User.create("test", "test@email.com", "TEST", "test-id");
         userRepository.save(user);
 
         // when
-        UserResponse found = userService.getById(user.getId());
+        UserResponse found = userService.getById(user.getPublicId());
 
         // then
-        assertThat(found.userId()).isEqualTo(user.getId());
+        assertThat(found.id()).isEqualTo(user.getPublicId());
         assertThat(found.username()).isEqualTo(user.getUsername());
     }
 
@@ -49,7 +49,7 @@ class UserServiceTest extends AbstractIntegrationTest {
         // given
         // when
         // then
-        assertThatThrownBy(() -> userService.getById(1))
+        assertThatThrownBy(() -> userService.getById("1234"))
                 .isInstanceOf(UserNotFoundException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.USER_NOT_FOUND);

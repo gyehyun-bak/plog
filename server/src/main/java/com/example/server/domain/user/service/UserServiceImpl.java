@@ -18,8 +18,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public UserResponse getById(int userId) {
-        return UserResponse.fromEntity(userRepository.findById(userId).orElseThrow(UserNotFoundException::new));
+    public UserResponse getById(String publicId) {
+        return UserResponse.fromEntity(userRepository.findByPublicId(publicId).orElseThrow(UserNotFoundException::new));
     }
 
     @Transactional(readOnly = true)
