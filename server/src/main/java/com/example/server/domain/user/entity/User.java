@@ -1,10 +1,9 @@
 package com.example.server.domain.user.entity;
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.example.server.global.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -35,7 +34,7 @@ public class User extends BaseEntity {
                 .email(email)
                 .oauthProvider(oauthProvider)
                 .oauthId(oauthId)
-                .publicId("user_" + UUID.randomUUID())
+                .publicId("user_" + NanoIdUtils.randomNanoId())
                 .build();
     }
 
@@ -47,7 +46,7 @@ public class User extends BaseEntity {
     public static User withId(int userId) {
         return User.builder()
                 .id(userId)
-                .publicId("user_test_" + UUID.randomUUID())
+                .publicId("user_test_" + NanoIdUtils.randomNanoId())
                 .build();
     }
 
