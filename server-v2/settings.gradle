@@ -1,1 +1,6 @@
 rootProject.name = 'server'
+
+['api', 'domain', 'application', 'infrastructure', 'security'].each {
+	include ":${it}"
+	project(":${it}").projectDir = file("module/${it}")
+}
