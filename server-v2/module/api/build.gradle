@@ -5,6 +5,9 @@ dependencies {
 	implementation project(':application')
 	implementation project(':infrastructure')
 	implementation project(':security')
+
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	testImplementation 'com.tngtech.archunit:archunit:1.4.1'
 }

@@ -4,11 +4,24 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.0.3' apply false
 	id 'io.spring.dependency-management' version '1.1.7' apply false
+	id 'com.diffplug.spotless' version '8.3.0' apply false
 }
 
 subprojects {
 	apply plugin: 'java'
 	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'com.diffplug.spotless'
+
+	spotless {
+		java {
+			palantirJavaFormat()
+			importOrder('', 'static ')
+			removeUnusedImports()
+			formatAnnotations()
+			trimTrailingWhitespace()
+			endWithNewline()
+		}
+	}
 
 	group = 'com.plog'
 	version = '0.0.1-SNAPSHOT'
@@ -44,5 +57,9 @@ subprojects {
 
 	tasks.named('test') {
 		useJUnitPlatform()
+	}
+
+	tasks.named('check') {
+		dependsOn 'spotlessApply'
 	}
 }
