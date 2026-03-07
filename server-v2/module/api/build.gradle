@@ -9,5 +9,5 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	testImplementation 'com.tngtech.archunit:archunit:1.4.1'
+	testImplementation 'com.tngtech.archunit:archunit-junit5:1.4.1'
 }
