@@ -10,10 +10,18 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 public class InfrastructureArchitectureTest {
 
     @ArchTest
-    static final ArchRule infrastructure_should_not_depend_on_api_or_security = noClasses()
+    static final ArchRule infrastructure_should_not_depend_on_api = noClasses()
             .that()
             .resideInAPackage("..infrastructure..")
             .should()
             .dependOnClassesThat()
-            .resideInAnyPackage("..api..", "..security..");
+            .resideInAPackage("..api..");
+
+    @ArchTest
+    static final ArchRule infrastructure_should_not_depend_on_security = noClasses()
+            .that()
+            .resideInAPackage("..infrastructure..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage("..security..");
 }

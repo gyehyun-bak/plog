@@ -10,7 +10,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 public class ApplicationArchitectureTest {
 
     @ArchTest
-    static final ArchRule application_should_not_depend_on_outer_layers = noClasses()
+    static final ArchRule application_should_not_depend_on_other_layers_except_domain = noClasses()
             .that()
             .resideInAPackage("..application..")
             .should()
