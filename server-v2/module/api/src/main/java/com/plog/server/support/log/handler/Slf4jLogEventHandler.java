@@ -13,11 +13,11 @@ public class Slf4jLogEventHandler implements LogEventHandler {
     public void handleLogEvent(LogEvent logEvent) {
         String message = "Exception: ";
         switch (logEvent.errorType().getLogLevel()) {
-            case TRACE -> log.trace(message, logEvent.e());
-            case DEBUG -> log.debug(message, logEvent.e());
-            case INFO -> log.info(message, logEvent.e());
-            case WARN -> log.warn(message, logEvent.e());
-            case ERROR -> log.error(message, logEvent.e());
+            case TRACE -> log.trace(message, logEvent.exception());
+            case DEBUG -> log.debug(message, logEvent.exception());
+            case INFO -> log.info(message, logEvent.exception());
+            case WARN -> log.warn(message, logEvent.exception());
+            case ERROR -> log.error(message, logEvent.exception());
             default -> throw new IllegalStateException("Unexpected value: " + logEvent.errorType().getLogLevel());
         }
     }
