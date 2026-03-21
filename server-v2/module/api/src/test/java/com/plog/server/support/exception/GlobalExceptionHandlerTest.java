@@ -12,8 +12,8 @@ import static org.mockito.Mockito.*;
 
 class GlobalExceptionHandlerTest {
 
-    ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
-    GlobalExceptionHandler handler = new GlobalExceptionHandler(publisher);
+    ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
+    GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler(applicationEventPublisher);
 
     @Test
     @DisplayName("Exception 발생 시 반환 body의 타입은 ApiResponse이어야 한다.")
@@ -22,7 +22,7 @@ class GlobalExceptionHandlerTest {
         var exception = new Exception();
 
         // when
-        var response = handler.handleException(exception);
+        var response = globalExceptionHandler.handleException(exception);
 
         // then
         assertThat(response.getBody()).isNotNull();
@@ -36,7 +36,7 @@ class GlobalExceptionHandlerTest {
         var exception = new Exception();
 
         // when
-        var response = handler.handleException(exception);
+        var response = globalExceptionHandler.handleException(exception);
 
         // then
         assertThat(response.getBody()).isNotNull();
@@ -51,7 +51,7 @@ class GlobalExceptionHandlerTest {
         var exception = new Exception();
 
         // when
-        var response = handler.handleException(exception);
+        var response = globalExceptionHandler.handleException(exception);
 
         // then
         assertThat(response.getBody()).isNotNull();
@@ -66,7 +66,7 @@ class GlobalExceptionHandlerTest {
         var exception = new BusinessException(ErrorType.DEFAULT_ERROR);
 
         // when
-        var response = handler.handleException(exception);
+        var response = globalExceptionHandler.handleException(exception);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(exception.getErrorType().getStatus());
@@ -79,11 +79,12 @@ class GlobalExceptionHandlerTest {
         var exception = new BusinessException(ErrorType.DEFAULT_ERROR);
 
         // when
-        var response = handler.handleException(exception);
+        var response = globalExceptionHandler.handleException(exception);
 
         // then
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().error().code()).isEqualTo(exception.getErrorType().getCode());
+        assertThat(response.getBody().error().code())
+                .isEqualTo(exception.getErrorType().getCode());
     }
 
     @Test
@@ -93,9 +94,9 @@ class GlobalExceptionHandlerTest {
         var exception = new Exception();
 
         // when
-        handler.handleException(exception);
+        globalExceptionHandler.handleException(exception);
 
         // then
-        then(publisher).should().publishEvent(any(LogEvent.class));
+        then(applicationEventPublisher).should().publishEvent(any(LogEvent.class));
     }
 }
